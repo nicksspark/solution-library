@@ -8,15 +8,35 @@ import { Redirect } from 'react-router';
 import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
+// import cssStyles from './Students.css';
 // import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 
 // const logo = require('../assets/visuals/CramberryMed.png');
 
 
 class Students extends Component {
+    constructor() {
+        super();
+        this.state = {
+            register: false,
+            writer: false,
+        };
+    }
     onLogout(e) {
         e.preventDefault();
         this.props.logout();
+    }
+    onRegister(e) {
+        e.preventDefault();
+        this.setState({
+            register: true
+        });
+    }
+    onWriter(e) {
+        e.preventDefault();
+        this.setState({
+            writer: true
+        });
     }
     math() {
         return (
@@ -29,20 +49,14 @@ class Students extends Component {
                   cols={4}
                   style={styles.gridList}
                 >
-                    {/* <Subheader>
-                        <h2>
-                            Mathematics
-                        </h2>
-                    </Subheader> */}
                     {mathData.map((tile) => (
                     <GridTile
                         // key={tile.img}
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
-                        // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
-                        <img src={tile.img} />
+                        <img src={tile.img}/>
                     </GridTile>
                   ))}
                 </GridList>
@@ -60,18 +74,12 @@ class Students extends Component {
                   cols={4}
                   style={styles.gridList}
                 >
-                    {/* <Subheader>
-                        <h2>
-                            Economics
-                        </h2>
-                    </Subheader> */}
                     {econData.map((tile) => (
                     <GridTile
                         // key={tile.img}
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
-                        // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
                         <img src={tile.img} />
                     </GridTile>
@@ -84,23 +92,30 @@ class Students extends Component {
         if (!this.props.token) {
             return <Redirect to="/login"/>
         }
+        if (this.state.register) {
+            return <Redirect to="/register"/>
+        }
+        if (this.state.writer) {
+            return <Redirect to="/writers"/>
+        }
         return (
-        <div>
-            <div style={styles.center}>
-                <img src="./visuals/CramberryMed.png"></img>
-                {/* <h1>
-                    CramBerry
-                </h1> */}
-            </div>
-            {this.math()}
-            {this.econ()}
-            <div style={styles.center}>
-                <span>
-                    <RaisedButton primary={true} onClick={(e) => {this.onLogout(e)}}>&nbsp;&nbsp;&nbsp;Contribute&nbsp;&nbsp;&nbsp;</RaisedButton>
-                    <RaisedButton onClick={(e) => {this.onLogout(e)}}>Logout</RaisedButton>
+            <div>
+                <span style={styles.title}>
+                    <div style={styles.left}>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onRegister(e)}}>Create an account</a>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onWriter(e)}}>Become a contributor</a>
+                    </div>
+                    <div style={styles.logo}>
+                        <img src="./visuals/Cramberry.png"></img>
+                    </div>
+                    <div style={styles.right}>
+                        <a style={styles.link} href='#'>Login</a>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onLogout(e)}}>Logout</a>
+                    </div>
                 </span>
+                {this.math()}
+                {this.econ()}
             </div>
-        </div>
         )
     }
 }
@@ -143,6 +158,27 @@ const styles = {
     },
     subHeader: {
         color: 'grey',
+    },
+    title: {
+        padding: '20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        color: 'grey',
+    },
+    right: {
+        textAlign: 'right',
+        paddingLeft: '195px',
+        paddingTop: '20px',
+        paddingRight: '36px',
+    },
+    link: {
+        display: 'block',
+        marginTop: '10px',
+        marginBottom: '10px',
+    },
+    left: {
+        paddingTop: '20px',
+        paddingLeft: '36px'
     }
 };
 

@@ -16,4 +16,17 @@ h2 {
 a {
   font-family: helvetica;
   font-weight: 200;
+  color: grey;
+  text-decoration: none;
+}
+
+a:hover {
+  font-family: helvetica;
+  font-weight: 200;
+  color: #EC00C1;
+}
+
+h3 {
+  font-family: helvetica;
+  font-weight: 200;
 }
