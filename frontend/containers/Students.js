@@ -14,16 +14,25 @@ import Subheader from 'material-ui/Subheader';
 
 class Students extends Component {
     constructor() {
-        super();
-        this.state = {
-            register: false,
-            writer: false,
-        };
+      super();
+      this.state = {
+        textbookView: false,
+        bookId: "",
+        register: false,
+        writer: false,
+      }
     }
     onLogout(e) {
         e.preventDefault();
         this.props.logout();
     }
+    textbook(e, key) {
+      e.preventDefault();
+      this.setState({
+        textbookView: true,
+        bookId: key
+      });
+
     onRegister(e) {
         e.preventDefault();
         this.setState({
@@ -53,6 +62,8 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
+                        onClick={(e) => {this.textbook(e, tile.key)}}
+                        // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
                         <img src={tile.img}/>
                     </GridTile>
@@ -78,6 +89,7 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
+                        onClick={(e) => {this.textbook(e)}}
                     >
                         <img src={tile.img} />
                     </GridTile>
@@ -89,6 +101,9 @@ class Students extends Component {
     render() {
         if (!this.props.token) {
             return <Redirect to="/login"/>
+        }
+        if (this.state.textbookView) {
+          return <Redirect to={"/textbook" + this.state.bookId}/>
         }
         if (this.state.register) {
             return <Redirect to="/register"/>
