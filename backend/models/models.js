@@ -9,18 +9,17 @@ const userSchema = new Schema({
   lname: String,
   username: String,
   email: String,
-  hashedPassword: String,
-  library: [{ type: mongoose.Schema.ObjectId, ref: 'Book' }],
+  hashedPassword: String
 });
 
 const bookSchema = new Schema({
   title: String,
   author: String,
   date: Date,
-  decription: String,
+  keyWords: Array,
   image: String,
-  text: String,
-  genre: String,
+  content: String,
+  genre: String
 });
 
 //  Models: pass the schema as an argument after building schema

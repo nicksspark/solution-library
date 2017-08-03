@@ -52,8 +52,7 @@ router.post('/register', async (req, res) => {
     lname: req.body.lname,
     username: req.body.username,
     email: req.body.email,
-    hashedPassword: hashPassword(req.body.password),
-    library: [],
+    hashedPassword: hashPassword(req.body.password)
   };
 
   console.log('validUser', validUser);
