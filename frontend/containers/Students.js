@@ -11,8 +11,6 @@ import Subheader from 'material-ui/Subheader';
 // import cssStyles from './Students.css';
 // import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 
-// const logo = require('../assets/visuals/CramberryMed.png');
-
 
 class Students extends Component {
     constructor() {
