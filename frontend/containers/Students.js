@@ -147,7 +147,7 @@ const styles = {
     },
     gridList: {
         width: 900,
-        height: 600,
+        height: 500,
         overflowY: 'auto',
         fontFamily: 'helvetica',
         borderWidth: '1px solid grey',
