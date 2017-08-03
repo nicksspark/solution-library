@@ -70,25 +70,25 @@ class Login extends Component {
     return (
       <div style={CSSstyles.container}>
           <h2> Login </h2>
-        <div>
-          <form onSubmit={(e) => {this.onLogin(e)}}>
-            <TextField
-              hintText=""
-              floatingLabelText="Username"
-              value={this.state.username}
-              onChange={(e) => {this.usernameChange(e)}}
-            /><br />
-            <TextField
-              hintText=""
-              floatingLabelText="Password"
-              type="password"
-              value={this.state.password}
-              onChange={(e) => {this.passwordChange(e)}}
-            /><br />
-            <RaisedButton type='submit' label="Login" primary={true} style={JSstyles.submit} />
-            <RaisedButton label="Register" secondary={true} style={JSstyles.submit} onClick={(e) => {this.onRegister(e)}} />
-          </form>
-        </div>
+          <div>
+              <form onSubmit={(e) => {this.onLogin(e)}}>
+                  <TextField
+                      hintText=""
+                      floatingLabelText="Username"
+                      value={this.state.username}
+                      onChange={(e) => {this.usernameChange(e)}}
+                  /><br />
+                  <TextField
+                      hintText=""
+                      floatingLabelText="Password"
+                      type="password"
+                      value={this.state.password}
+                      onChange={(e) => {this.passwordChange(e)}}
+                  /><br />
+                  <RaisedButton type='submit' label="Login" primary={true} style={JSstyles.submit} />
+                  <RaisedButton label="Register" secondary={true} style={JSstyles.submit} onClick={(e) => {this.onRegister(e)}} />
+              </form>
+          </div>
       </div>
     );
   }
@@ -105,8 +105,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login: (username, password) => {
-      dispatch(actions.login(username, password))
+    login: (user, token) => {
+      dispatch(actions.login(user, token))
     }
   };
 };
