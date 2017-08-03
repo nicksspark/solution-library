@@ -14,25 +14,25 @@ import Subheader from 'material-ui/Subheader';
 
 class Students extends Component {
     constructor() {
-      super();
-      this.state = {
-        textbookView: false,
-        bookId: "",
-        register: false,
-        writer: false,
-      }
+        super();
+        this.state = {
+            // textbookView: false,
+            bookId: "",
+            register: false,
+            writer: false,
+        }
     }
     onLogout(e) {
         e.preventDefault();
         this.props.logout();
     }
     textbook(e, key) {
-      e.preventDefault();
-      this.setState({
-        textbookView: true,
-        bookId: key
+        e.preventDefault();
+        this.setState({
+            // textbookView: true,
+            bookId: key
       });
-
+    }
     onRegister(e) {
         e.preventDefault();
         this.setState({
@@ -52,9 +52,9 @@ class Students extends Component {
                     Mathematics
                 </h2>
                 <GridList
-                  cellHeight={240}
-                  cols={4}
-                  style={styles.gridList}
+                    cellHeight={240}
+                    cols={4}
+                    style={styles.gridList}
                 >
                     {mathData.map((tile) => (
                     <GridTile
@@ -79,9 +79,9 @@ class Students extends Component {
                     Economics
                 </h2>
                 <GridList
-                  cellHeight={240}
-                  cols={4}
-                  style={styles.gridList}
+                    cellHeight={240}
+                    cols={4}
+                    style={styles.gridList}
                 >
                     {econData.map((tile) => (
                     <GridTile
@@ -102,8 +102,8 @@ class Students extends Component {
         if (!this.props.token) {
             return <Redirect to="/login"/>
         }
-        if (this.state.textbookView) {
-          return <Redirect to={"/textbook" + this.state.bookId}/>
+        if (this.state.bookId) {
+            return <Redirect to={"/textbook/" + this.state.bookId}/>
         }
         if (this.state.register) {
             return <Redirect to="/register"/>

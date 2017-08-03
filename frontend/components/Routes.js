@@ -6,6 +6,8 @@ import Login from '../containers/Login';
 import Writers from './Writers';
 import Students from '../containers/Students';
 import Register from '../containers/Register';
+import Book from '../containers/Book';
+
 class Routes extends Component {
     render() {
         return (
@@ -17,6 +19,7 @@ class Routes extends Component {
                     <Route path='/register' component={Register}/>
                     <Route path='/writers' component={Writers}/>
                     <Route path='/login' component={Login}/>
+                    <Route path='/textbook' component={Book}/>
                 </Switch>
             </App>
         )

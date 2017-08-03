@@ -7,7 +7,6 @@ import DevTools from './DevTools';
 import { ConnectedRouter } from 'react-router-redux';
 
 export default function Root({ store, history }) {
-    console.log(Provider, ConnectedRouter);
     return (
         <Provider store={store}>
             <ConnectedRouter history={history}>
