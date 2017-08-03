@@ -14,9 +14,23 @@ import Subheader from 'material-ui/Subheader';
 
 
 class Students extends Component {
+    constructor() {
+      super();
+      this.state = {
+        textbookView: false,
+        bookId: "",
+      }
+    }
     onLogout(e) {
         e.preventDefault();
         this.props.logout();
+    }
+    textbook(e, key) {
+      e.preventDefault();
+      this.setState({
+        textbookView: true,
+        bookId: key
+      });
     }
     math() {
         return (
@@ -40,9 +54,10 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
+                        onClick={(e) => {this.textbook(e, tile.key)}}
                         // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
-                        <img src={tile.img} />
+                        <img src={tile.img} id={tile.key} />
                     </GridTile>
                   ))}
                 </GridList>
@@ -71,6 +86,7 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
+                        onClick={(e) => {this.textbook(e)}}
                         // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
                         <img src={tile.img} />
@@ -84,13 +100,13 @@ class Students extends Component {
         if (!this.props.token) {
             return <Redirect to="/login"/>
         }
+        if (this.state.textbookView) {
+          return <Redirect to={"/textbook" + this.state.bookId}/>
+        }
         return (
         <div>
             <div style={styles.center}>
                 <img src="./visuals/CramberryMed.png"></img>
-                {/* <h1>
-                    CramBerry
-                </h1> */}
             </div>
             {this.math()}
             {this.econ()}
