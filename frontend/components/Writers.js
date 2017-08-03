@@ -1,10 +1,10 @@
 import React from 'react';
-import styles from '../assets/stylesheets/Writers.css';
+// import styles from '../assets/stylesheets/Writers.css';
 
 const Writers = ( ) => {
     return (
     <div>
-        <div className={styles.title}>
+        <div>
             <h1>
                 Become a CramBerry contributor.
             </h1>
