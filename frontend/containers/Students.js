@@ -11,14 +11,11 @@ import Subheader from 'material-ui/Subheader';
 // import cssStyles from './Students.css';
 // import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 
-// const logo = require('../assets/visuals/CramberryMed.png');
-
 
 class Students extends Component {
     constructor() {
       super();
       this.state = {
-        textbookView: false,
         bookId: "",
         register: false,
         writer: false,
@@ -30,10 +27,10 @@ class Students extends Component {
         this.props.logout();
     }
     textbook(e, key) {
-      e.preventDefault();
-      this.setState({
-        textbookView: true,
-        bookId: key
+        e.preventDefault();
+        this.setState({
+            // textbookView: true,
+            bookId: key
       });
     }
 
@@ -62,9 +59,9 @@ class Students extends Component {
                     Mathematics
                 </h2>
                 <GridList
-                  cellHeight={240}
-                  cols={4}
-                  style={styles.gridList}
+                    cellHeight={240}
+                    cols={4}
+                    style={styles.gridList}
                 >
                     {mathData.map((tile) => (
                     <GridTile
@@ -89,9 +86,9 @@ class Students extends Component {
                     Economics
                 </h2>
                 <GridList
-                  cellHeight={240}
-                  cols={4}
-                  style={styles.gridList}
+                    cellHeight={240}
+                    cols={4}
+                    style={styles.gridList}
                 >
                     {econData.map((tile) => (
                     <GridTile
@@ -121,7 +118,7 @@ class Students extends Component {
         }
     }
     render() {
-        if (this.state.textbookView) {
+        if (this.state.bookId) {
           return <Redirect to={"/textbook" + this.state.bookId}/>
         }
         if (this.state.register) {
