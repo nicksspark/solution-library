@@ -44,11 +44,13 @@ class Book extends Component {
     printChap() {
         const book = this.state.book;
         const ch = this.state.chapter;
-        const chapterArr =  book.chapters[ch];
-        const links = chapterArr.map((link) => (
-            <a href={link} target='_blank' style={styles.block}>Link to Chapter 1</a>
-        ))
-        return links;
+            if (book && ch) {
+                const chapterArr =  book.chapters[ch];
+                const links = chapterArr.map((link) => (
+                    <a href={link} target='_blank' style={styles.block}>Link to Chapter 1</a>
+                ))
+                return links;
+            }
     }
 
     handleToggle() {

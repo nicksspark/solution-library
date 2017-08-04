@@ -77,7 +77,7 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
-                        onClick={(e) => {this.textbook(e)}}
+                        onClick={(e) => {this.textbook(e, tile.key)}}
                     >
                         <img src={tile.img} />
                     </GridTile>

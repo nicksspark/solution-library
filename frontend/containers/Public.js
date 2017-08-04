@@ -46,7 +46,6 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
-                        onClick={(e) => {this.textbook(e, tile.key)}}
                         // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
                         <img src={tile.img}/>
@@ -73,7 +72,6 @@ class Students extends Component {
                         key={tile.key}
                         title={tile.title}
                         subtitle={tile.author}
-                        onClick={(e) => {this.textbook(e)}}
                     >
                         <img src={tile.img} />
                     </GridTile>
