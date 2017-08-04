@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router';
 import axios from 'axios';
 import actions from '../actions/index';
 
@@ -57,6 +58,9 @@ class Book extends Component {
     }
 
     render() {
+        if (!this.props.token) {
+            return <Redirect to='/login'/>
+        }
         return this.props.isLoaded && (
             <div>
                 <div style={styles.links}>

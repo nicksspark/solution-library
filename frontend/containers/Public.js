@@ -13,25 +13,20 @@ class Students extends Component {
     constructor() {
       super();
       this.state = {
-        bookId: "",
         register: false,
-        writer: false,
+        login: false
       }
     }
-    onLogout(e) {
-        e.preventDefault();
-        this.props.logout();
-    }
-    textbook(e, key) {
+    onRegister(e) {
         e.preventDefault();
         this.setState({
-            bookId: key
-      });
+            register: true
+        });
     }
-    onWriter(e) {
+    onLogin(e) {
         e.preventDefault();
         this.setState({
-            writer: true
+            login: true
         });
     }
     math() {
@@ -52,6 +47,7 @@ class Students extends Component {
                         title={tile.title}
                         subtitle={tile.author}
                         onClick={(e) => {this.textbook(e, tile.key)}}
+                        // actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
                     >
                         <img src={tile.img}/>
                     </GridTile>
@@ -87,26 +83,23 @@ class Students extends Component {
         );
     }
     render() {
-        if (!this.props.token) {
-            return <Redirect to='/' />
+        if (this.state.login) {
+            return <Redirect to="/login"/>
         }
-        if (this.state.bookId) {
-          return <Redirect to={"/textbook/" + this.state.bookId}/>
-        }
-        if (this.state.writer) {
-            return <Redirect to="/writers"/>
+        if (this.state.register) {
+            return <Redirect to="/register"/>
         }
         return (
             <div>
                 <span style={styles.title}>
                     <div style={styles.left}>
-                        <a style={styles.link} href='#' onClick={(e) => {this.onWriter(e)}}>Become a contributor</a>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onRegister(e)}}>Register</a>
                     </div>
                     <div style={styles.logo}>
                         <img src="./visuals/Cramberry.png"></img>
                     </div>
                     <div style={styles.right}>
-                        <a style={styles.link} href='#' onClick={(e) => {this.onLogout(e)}}>Logout</a>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onLogin(e)}}>Login</a>
                     </div>
                 </span>
                 {this.math()}
