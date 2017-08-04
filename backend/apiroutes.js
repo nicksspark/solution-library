@@ -55,11 +55,8 @@ router.post('/register', async (req, res) => {
     hashedPassword: hashPassword(req.body.password)
   };
 
-  console.log('validUser', validUser);
-
   try {
     const user = await isValidUser(validUser);
-    console.log('VALIDATE:', user);
 
     if (user) {
       res.json({ error: 'email taken' });
@@ -93,21 +90,25 @@ router.post('/register', async (req, res) => {
 //     });
 //   });
 
-router.get('/explore', (req, res) => {
-  Book.find()
-  .exec((err, books) => {
-    res.json({ success: true, library: books });
-  });
-});
+router.get('/book/:bookId', (req, res) => {
+    console.log('here')
+    Book.findById(req.params.bookId, (err, book) => {
+        if (err) {
+            res.json({ failure: 'error' });
+        } else if (!book) {
+            res.json({ failure: 'no book'});
+        } else {
+            res.json({
+                success: true,
+                book: book
+            })
+        }
+    })
+})
 
-router.get('/read/:bookId', (req, res) => {
-  const bookId = req.params.bookId;
-  Book.findById(bookId, (err, book) => {
-    if (err) {
-      res.json({ failure: 'failed to find book' });
-    }
-    res.json({ success: true, book: book });
-  });
-});
+router.post('/book/:bookId/upload', (req, res) => {
+    //save to AWS, callback:
+
+})
 
 module.exports = router;

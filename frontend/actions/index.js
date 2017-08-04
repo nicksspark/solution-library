@@ -15,9 +15,16 @@ const logout = () => {
     }
 }
 
+const loaded = () => {
+    return {
+        type: 'LOADED'
+    }
+}
+
 const actions = {
     login,
-    logout
+    logout,
+    loaded
 }
 
 export default actions;

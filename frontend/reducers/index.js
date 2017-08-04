@@ -19,9 +19,20 @@ const reducer = (state = {}, action) => {
     }
 }
 
+const loader = (state = { loaded: false }, action) => {
+  const newState = state;
+  switch (action.type) {
+    case 'LOADED':
+      return { loaded: !newState.loaded };
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
     reducer,
-    router
+    router,
+    loader
 });
 
 export default rootReducer;

@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
+import actions from '../actions/index';
+
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -11,24 +15,40 @@ class Book extends Component {
         super(props);
         this.state = {
             open: false,
-            // chapter: null,
-            // notes: null
+            chapter: 1,
+            book: null
         };
     }
 
-    // componentDidMount() {
-    //     axios.post('/book/:bookId', {
-    //         chapter: blah
-    //     })
-    //     .then((res) => {
-    //         this.setState({
-    //             notes: res.data.notes
-    //         });
-    //     })
-    //     .catch((err) => {
-    //         console.log('ERR', err);
-    //     })
-    // }
+    componentWillMount() {
+        const id = this.props.path.split('/')[2];
+        axios.get('/api/book/' + id, {
+            headers: {
+                'Authorization': 'Bearer ' + this.props.token
+            }
+        })
+        .then((res) => {
+            if (res.data.success) {
+                this.setState({
+                    book: res.data.book
+                });
+            }
+            this.props.loaded();
+        })
+        .catch((err) => {
+            console.log('ERR', err);
+        })
+    }
+
+    printChap() {
+        const book = this.state.book;
+        const ch = this.state.chapter;
+        const chapterArr =  book.chapters[ch];
+        const links = chapterArr.map((link) => (
+            <a href={link} target='_blank' style={styles.block}>Link to Chapter 1</a>
+        ))
+        return links;
+    }
 
     handleToggle() {
         this.setState({
@@ -37,7 +57,7 @@ class Book extends Component {
     }
 
     render() {
-        return (
+        return this.props.isLoaded && (
             <div>
                 <div style={styles.links}>
                     <RaisedButton
@@ -61,6 +81,7 @@ class Book extends Component {
                     <div>
                         <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
                     </div>
+                    {this.printChap()}
                 </div>
                 <Drawer open={this.state.open}>
                     <div>
@@ -76,6 +97,7 @@ class Book extends Component {
                                     <MenuItem primaryText="1.6 Sequences of Events"/>
                                 </div>
                             ]}
+                            onClick={() => {this.setState({chapter: 1})}}
                         />
                         <MenuItem
                             primaryText="2. Repeated Trials and Sampling"
@@ -109,6 +131,23 @@ class Book extends Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        path: state.router.location.pathname,
+        token: state.reducer.token,
+        isLoaded: state.loader.loaded
+    }
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loaded: () => {
+            dispatch(actions.loaded());
+        }
+    };
+};
+
+Book = connect(mapStateToProps, mapDispatchToProps)(Book);
+
 export default Book;
 
 const styles = {
@@ -127,6 +166,9 @@ const styles = {
     links: {
         paddingLeft: '275px',
         paddingBottom: '10px',
-        paddingTop: '10px'
-    }
+        paddingTop: '10px',
+    },
+    block: {
+        display: 'block',
+    },
 };

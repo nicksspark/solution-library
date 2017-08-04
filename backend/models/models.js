@@ -16,9 +16,9 @@ const bookSchema = new Schema({
   title: String,
   author: String,
   date: Date,
-  keyWords: Array,
+  keywords: Array,
   image: String,
-  content: String,
+  chapters: Object, //each chapter key will have an array of links
   genre: String
 });
 

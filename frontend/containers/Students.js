@@ -119,7 +119,7 @@ class Students extends Component {
     }
     render() {
         if (this.state.bookId) {
-          return <Redirect to={"/textbook" + this.state.bookId}/>
+          return <Redirect to={"/textbook/" + this.state.bookId}/>
         }
         if (this.state.register) {
             return <Redirect to="/register"/>
@@ -218,7 +218,7 @@ const mathData = [
         img: 'https://images-na.ssl-images-amazon.com/images/I/41a28A84XhL._SX422_BO1,204,203,200_.jpg',
         title: 'Early Transcendentals',
         author: 'Stewart',
-        key: 1,
+        key: '596fea7c734d1d6202a70d1f',
     },
     {
         img: 'https://images-na.ssl-images-amazon.com/images/I/51bY4%2B%2BNbQL._SX258_BO1,204,203,200_.jpg',

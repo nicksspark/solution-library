@@ -34,14 +34,12 @@ class Login extends Component {
   }
   onLogin(e) {
     e.preventDefault();
-    console.log('button clicked')
     axios.post('http://localhost:3000/login', {
       username: this.state.username,
       password: this.state.password
     })
     .then((res) => {
       if (res.data.success) {
-        console.log('received from backend')
         this.props.login(res.data.user, res.data.token);
       }
     })
@@ -61,7 +59,6 @@ class Login extends Component {
     // console.log('token', this.props.token);
     //
     if (this.props.token) {
-        console.log('redirecting to students')
       return <Redirect to='/students' />;
     }
     if (this.state.register) {
