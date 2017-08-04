@@ -21,10 +21,18 @@ const loaded = () => {
     }
 }
 
+const search = (value) => {
+    return {
+        type: 'SEARCH',
+        value: value
+    }
+}
+
 const actions = {
     login,
     logout,
-    loaded
+    loaded,
+    search
 }
 
 export default actions;

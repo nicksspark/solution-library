@@ -11,6 +11,7 @@ const reducer = (state = {}, action) => {
         case 'LOGIN':
             newState.user = action.user;
             newState.token = action.token;
+            console.log('logged in', newState.token);
             return newState;
         case 'LOGOUT':
             return {};
@@ -29,10 +30,22 @@ const loader = (state = { loaded: false }, action) => {
   }
 }
 
+const search = (state = {}, action) => {
+    console.log('got to reducer');
+    let newState = Object.assign({}, state);
+    switch (action.type) {
+        case 'SEARCH':
+            return { value: action.value };
+        default:
+            return newState;
+    }
+}
+
 const rootReducer = combineReducers({
     reducer,
     router,
-    loader
+    loader,
+    search
 });
 
 export default rootReducer;
