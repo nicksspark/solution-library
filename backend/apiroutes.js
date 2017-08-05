@@ -8,8 +8,23 @@ const Book = models.Book;
 // const passport = require('passport');
 // hashing
 const crypto = require('crypto');
-
 const isEmail = require('is-email');
+
+//S3 STUFF:
+// Load the SDK for JavaScript
+var AWS = require('aws-sdk');
+
+// Load credentials and set region from JSON file
+AWS.config.loadFromPath('./config.json');
+
+// Multer config
+const multer = require('multer');
+// memory storage keeps file data in a buffer
+const upload = multer({
+    storage: multer.memoryStorage(),
+    // file size limitation in bytes
+    limits: { fileSize: 52428800 },
+});
 
 function hashPassword(password) {
   const hash = crypto.createHash('sha256');
@@ -106,9 +121,26 @@ router.get('/book/:bookId', (req, res) => {
     })
 })
 
-router.post('/book/:bookId/upload', (req, res) => {
-    //save to AWS, callback:
+router.post('/upload', upload.single('myFile'), (req, res) => {
+    // Create S3 service object
+    const s3 = new AWS.S3();
+    console.log('THE FILE', req.file)
+    // call S3 to retrieve upload file to specified bucket
+    var params = {
+        Bucket: 'cramberry',
+        Key: 'theFile',
+        Body: req.file.buffer,
+        ACL: 'public-read', // your permisions
+    };
 
+    // call S3 to retrieve upload file to specified bucket
+    s3.upload(params, function (err, data) {
+        if (err) {
+            console.log("ERROR", err);
+        } if (data) {
+            console.log("Upload Success", data.Location);
+        }
+    });
 })
 
 module.exports = router;

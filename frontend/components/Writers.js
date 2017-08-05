@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import Dropzone from 'react-dropzone';
+import axios from 'axios';
+import superagent from 'superagent'
 
 class Writers extends Component {
     constructor() {
@@ -12,17 +14,56 @@ class Writers extends Component {
         }
     }
     onDrop(files) {
+        console.log('files', [...this.state.files, ...files]);
         this.setState({
             files: [...this.state.files, ...files]
         });
     }
     showFiles() {
-        return this.state.files.map((f) => (<p>{f.name}</p>));
+        return (this.state.files.map((f) => (<p>{f.name}</p>)))
     }
     onHome(e) {
         this.setState({
             home: true
         });
+    }
+    onUpload(e) {
+        e.preventDefault();
+        const self = this;
+        // const reader = new FileReader();
+        // reader.addEventListener("error", function() {
+        //    console.log('file error');
+        // });
+        // let file;
+        // reader.addEventListener("loadend", function() {
+        //    // reader.result contains the contents of blob as a typed array
+        //     console.log('here');
+        //     file = reader.result;
+        //     console.log('here again');
+        // });
+        // reader.readAsArrayBuffer(this.state.files[0])
+        superagent.post('/api/upload')
+            .set('Authorization', 'Bearer ' + self.props.token)
+            .attach('myFile', this.state.files[0])
+            .end((err, res) => {
+                if (err) console.log(err);
+                console.log('uploaded!');
+            })
+        // axios.post('/api/upload', {
+        //     files: this.state.files[0]
+        // }, {
+        //     headers: {
+        //         'Authorization': 'Bearer ' + self.props.token
+        //     }
+        // })
+        // .then((res) => {
+        //     if (res.data.success) {
+        //         console.log('uploaded!');
+        //     }
+        // })
+        // .catch((err) => {
+        //     console.log('ERR', err);
+        // })
     }
     render() {
         if (!this.props.token) {
@@ -59,6 +100,7 @@ class Writers extends Component {
                     </div>
                     <h2>To be uploaded:</h2>
                     {this.showFiles()}
+                    <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
                     <a href='#' onClick={(e) => this.onHome(e)}>Home</a>
