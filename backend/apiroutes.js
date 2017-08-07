@@ -91,19 +91,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// gets the user, gets the user's library
-// router.post('/', (req, res) => {
-//   const userId = req.body.id;
-//     User.findById(userId)
-//     .populate('library')
-//     .exec((err, user) => {
-//       if (err) {
-//         res.json({ failure: 'failed to find user' });
-//       }
-//       console.log(user);
-//       res.json({ success: true, books: user.library });
-//     });
-//   });
 
 router.get('/book/:bookId', (req, res) => {
     console.log('here')
@@ -124,11 +111,11 @@ router.get('/book/:bookId', (req, res) => {
 router.post('/upload', upload.single('myFile'), (req, res) => {
     // Create S3 service object
     const s3 = new AWS.S3();
-    console.log('THE FILE', req.file)
+    console.log('req', req.file)
     // call S3 to retrieve upload file to specified bucket
     var params = {
         Bucket: 'cramberry',
-        Key: 'theFile',
+        Key: Math.floor(Math.random() * 1000000000).toString(),
         Body: req.file.buffer,
         ACL: 'public-read', // your permisions
     };
@@ -138,11 +125,30 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
         if (err) {
             console.log("ERROR", err);
         } if (data) {
-            console.log("Upload Success", data);
-
+            console.log("upload success");
+            Book.findById(req.body.searchId, (err, book) => {
+                if (err) {
+                    console.log('update err', err);
+                } else if (book) {
+                    book.chapters[req.body.ch] = [...book.chapters[req.body.ch], data.Location];
+                    console.log('update success', book);
+                } else { console.log('no book'); //no err and no book
+                //     new Book({
+                //         title: req.body.title, //going to have to get info from form or something
+                //         chapters: [req.body.ch: data.Location] //again, get ch and filename
+                //     }).save((err, newBook) => {
+                //         if (err) {
+                //             res.json({ failure: 'failed to save new book' });
+                //         } else {
+                //             res.json({ success: 'saved new book' });
+                //             console.log('saved');
+                //         }
+                //     });
+                }
+            })
         }
     });
-
 })
+
 
 module.exports = router;

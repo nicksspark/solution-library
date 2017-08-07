@@ -116,6 +116,7 @@ class Book extends Component {
                                     <MenuItem primaryText="2.5 Random Sampling"/>
                                 </div>
                             ]}
+                            onClick={() => {this.setState({chapter: 2})}}
                         />
                         <MenuItem
                             primaryText="3. Random Variables"
@@ -129,6 +130,7 @@ class Book extends Component {
                                     <MenuItem primaryText="3.6 Symmetry"/>
                                 </div>
                             ]}
+                            onClick={() => {this.setState({chapter: 3})}}
                         />
                     </div>
                 </Drawer>

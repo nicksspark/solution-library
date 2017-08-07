@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
-import superagent from 'superagent'
+import superagent from 'superagent';
+import SearchBar from '../containers/SearchBar';
 
 class Writers extends Component {
     constructor() {
@@ -32,10 +33,12 @@ class Writers extends Component {
         const self = this;
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
+            .field('searchId', this.props.searchId)
+            .field('ch', '1') //change this to input
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);
-                console.log('uploaded!');
+                console.log('sent to S3');
             })
     }
     render() {
@@ -73,6 +76,8 @@ class Writers extends Component {
                     </div>
                     <h2>To be uploaded:</h2>
                     {this.showFiles()}
+                    <h2>Search for a book:</h2>
+                    <SearchBar/>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
@@ -85,7 +90,8 @@ class Writers extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.reducer.token
+        token: state.reducer.token,
+        searchId: state.search.value,
     };
 }
 
