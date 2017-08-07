@@ -3,21 +3,32 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { connect } from 'react-redux';
 import actions from '../actions/index';
 import { Redirect } from 'react-router';
-
 //material ui
 import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
+import SearchBar from '../containers/SearchBar';
+import { logout } from '../actions/index';
 
 class Students extends Component {
     constructor() {
-      super();
-      this.state = {
-        bookId: "",
-        register: false,
-        writer: false,
-      }
+        super();
+        this.state = {
+            bookId: "",
+            register: false,
+            writer: false,
+            searchValue: ""
+        };
     }
+
+    componentDidUpdate() {
+        if (this.props.value){
+            this.setState({
+                bookId: this.props.value.id
+            });
+        }
+    }
+
     onLogout(e) {
         e.preventDefault();
         this.props.logout();
@@ -109,6 +120,7 @@ class Students extends Component {
                         <a style={styles.link} href='#' onClick={(e) => {this.onLogout(e)}}>Logout</a>
                     </div>
                 </span>
+                <SearchBar/>
                 {this.math()}
                 {this.econ()}
             </div>
@@ -118,7 +130,8 @@ class Students extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.reducer.token
+        token: state.reducer.token,
+        value: state.search.value
     };
 }
 
