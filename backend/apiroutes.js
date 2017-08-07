@@ -138,9 +138,11 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
         if (err) {
             console.log("ERROR", err);
         } if (data) {
-            console.log("Upload Success", data.Location);
+            console.log("Upload Success", data);
+
         }
     });
+
 })
 
 module.exports = router;
