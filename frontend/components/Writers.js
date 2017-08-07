@@ -30,18 +30,6 @@ class Writers extends Component {
     onUpload(e) {
         e.preventDefault();
         const self = this;
-        // const reader = new FileReader();
-        // reader.addEventListener("error", function() {
-        //    console.log('file error');
-        // });
-        // let file;
-        // reader.addEventListener("loadend", function() {
-        //    // reader.result contains the contents of blob as a typed array
-        //     console.log('here');
-        //     file = reader.result;
-        //     console.log('here again');
-        // });
-        // reader.readAsArrayBuffer(this.state.files[0])
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .attach('myFile', this.state.files[0])
@@ -49,21 +37,6 @@ class Writers extends Component {
                 if (err) console.log(err);
                 console.log('uploaded!');
             })
-        // axios.post('/api/upload', {
-        //     files: this.state.files[0]
-        // }, {
-        //     headers: {
-        //         'Authorization': 'Bearer ' + self.props.token
-        //     }
-        // })
-        // .then((res) => {
-        //     if (res.data.success) {
-        //         console.log('uploaded!');
-        //     }
-        // })
-        // .catch((err) => {
-        //     console.log('ERR', err);
-        // })
     }
     render() {
         if (!this.props.token) {
