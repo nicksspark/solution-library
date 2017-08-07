@@ -144,5 +144,32 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
     });
 
 })
+router.get('/searchbar', (req,res) => {
+    Book.find()
+    .exec((err, books) => {
+        if (err) {
+            res.json({ failure: "cannot find books"})
+        }
+        const newBook = books.map((book) => {
+            return {
+                title: book.title,
+                author: book.author,
+                key: book.id
+            }
+        });
+        res.json({ success: true, books: newBook });
+    });
+});
+
+router.post('/loadchapters', (req,res) => {
+    Book.findById(req.body.bookId)
+    .exec((err, books) => {
+        if (err) {
+            res.json({ failure: "cannot find book"})
+        }
+        const chapters = Object.keys(books.chapters);
+        res.json({ success: true, chapters: chapters });
+    });
+});
 
 module.exports = router;
