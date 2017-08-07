@@ -17,6 +17,7 @@ const languages = [
 
 // Teach Autosuggest how to calculate suggestions for any given input value.
 const getSuggestions = value => {
+    console.log(value);
   const inputValue = value.trim().toLowerCase();
   const inputLength = inputValue.length;
    if (inputLength === 0) {
@@ -26,10 +27,7 @@ const getSuggestions = value => {
    return suggestions;
 };
 
-// When suggestion is clicked, Autosuggest needs to populate the input
-// based on the clicked suggestion. Teach Autosuggest how to calculate the
-// input value for every given suggestion.
-const getSuggestionValue = suggestion => suggestion.name;
+
 
 // Use your imagination to render suggestions.
 const renderSuggestion = suggestion => (
@@ -47,25 +45,45 @@ class SearchBar extends React.Component {
     // and they are initially empty because the Autosuggest is closed.
     this.state = {
       value: '',
-      suggestions: []
+      suggestions: [],
+      key: ''
   };
     this.onChange = this.onChange.bind(this);
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+    this.getSuggestionValue = this.getSuggestionValue.bind(this)
+  }
+  // When suggestion is clicked, Autosuggest needs to populate the input
+  // based on the clicked suggestion. Teach Autosuggest how to calculate the
+  // input value for every given suggestion.
+  getSuggestionValue (suggestion) {
+      this.setState({
+          key: suggestion.year
+      });
+      console.log(this.state)
+      return suggestion.name;
   }
 
   onChange (event, { newValue }) {
       event.preventDefault();
-      console.log(event)
+      console.log("newVal:", newValue)
       this.setState({
           value: newValue
       });
-      console.log(this.state.value);
+      console.log("val:", this.state.value);
   };
+
+  getId (suggestion) {
+      this.setState({
+          key: suggestion.year
+      });
+      console.log(this.state.key);
+  }
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
   onSuggestionsFetchRequested({ value }) {
+     console.log("fetched req:", value)
     this.setState({
       suggestions: getSuggestions(value)
     });
@@ -80,8 +98,10 @@ class SearchBar extends React.Component {
   onSearch (e) {
       console.log("SEARCH BUTTON CLICKED")
       e.preventDefault();
-      this.props.search(this.state.value)
-      console.log("VALUE", this.state.value);
+      this.props.search(this.state.key)
+      console.log(this.state)
+    //   this.props.search(this.state.key)
+      console.log("VALUE", this.state.key);
   }
 
   render() {
@@ -101,7 +121,7 @@ class SearchBar extends React.Component {
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
                 onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                getSuggestionValue={getSuggestionValue}
+                getSuggestionValue={this.getSuggestionValue}
                 renderSuggestion={renderSuggestion}
                 inputProps={inputProps}
             />
