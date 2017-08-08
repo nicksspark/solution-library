@@ -38,10 +38,11 @@ class Writers extends Component {
     onUpload(e) {
         e.preventDefault();
         const self = this;
+        const ch = this.state.chap;
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
-            .field('ch', '1') //change this to input
+            .field('ch', ch)
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);
@@ -81,25 +82,19 @@ class Writers extends Component {
 
     chapter () {
         if (this.state.chapters && this.props.isLoaded) {
-            console.log('rendering', this.state)
+            // this.props.loaded();
             return (
-                <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
-                    {this.state.chapters.map(chapter =>
-                    <MenuItem value={chapter} primaryText={chapter}/>)}
-                </DropDownMenu>
+                <div>
+                    <h3>Select a chapter: </h3>
+                    <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
+                        {this.state.chapters.map(chapter =>
+                        <MenuItem value={chapter} primaryText={chapter}/>)}
+                    </DropDownMenu>
+                </div>
             )
         }
     }
-        // if (this.state.chapters && this.props.isLoaded) {
-        //     console.log('chapter', this.state.chapters)
-        //     return (
-        //         <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
-        //             {this.state.chapters.map(chapter => {
-        //                 <MenuItem value={chapter} primaryText={chapter}/>
-        //             })}
-        //         </DropDownMenu>
-        //     )
-        // }
+
     render() {
         if (!this.props.token) {
             return <Redirect to='/login'/>
@@ -137,7 +132,6 @@ class Writers extends Component {
                     {this.showFiles()}
                     <h2>Search for a book:</h2>
                     <SearchBar/>
-                    <h3>Select a chapter: </h3>
                     {this.chapter()}
                     <Divider />
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
@@ -154,14 +148,14 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
-        isLoaded: state.loader.loaded
+        isLoaded: state.loader.bookLoaded
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         loaded: () => {
-            dispatch(actions.loaded())
+            dispatch(actions.bookLoaded())
         }
     };
 }

@@ -17,17 +17,16 @@ class Students extends Component {
             bookId: "",
             register: false,
             writer: false,
-            searchValue: ""
         };
     }
 
-    componentDidUpdate() {
-        if (this.props.value){
-            this.setState({
-                bookId: this.props.value.id
-            });
-        }
-    }
+    // componentDidUpdate() {
+    //     if (this.props.value){
+    //         this.setState({
+    //             bookId: this.props.value.id
+    //         });
+    //     }
+    // }
 
     onLogout(e) {
         e.preventDefault();
@@ -103,6 +102,9 @@ class Students extends Component {
         }
         if (this.state.bookId) {
           return <Redirect to={"/textbook/" + this.state.bookId}/>
+        }
+        if (this.props.value) {
+          return <Redirect to={"/textbook/" + this.props.value}/>
         }
         if (this.state.writer) {
             return <Redirect to="/writers"/>

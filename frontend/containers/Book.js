@@ -17,7 +17,8 @@ class Book extends Component {
         this.state = {
             open: false,
             chapter: 1,
-            book: null
+            book: null,
+            home: false
         };
     }
 
@@ -59,9 +60,21 @@ class Book extends Component {
         });
     }
 
+    onHome(e) {
+        e.preventDefault();
+        this.props.search('');
+        this.props.loaded();
+        this.setState({
+            home: true
+        });
+    }
+
     render() {
         if (!this.props.token) {
             return <Redirect to='/login'/>
+        }
+        if (this.state.home) {
+            return <Redirect to='/students'/>
         }
         return this.props.isLoaded && (
             <div>
@@ -88,6 +101,9 @@ class Book extends Component {
                         <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
                     </div>
                     {this.printChap()}
+                </div>
+                <div style={styles.links}>
+                    <a href='#' onClick={(e) => {this.onHome(e)}}>Home</a>
                 </div>
                 <Drawer open={this.state.open}>
                     <div>
@@ -150,6 +166,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         loaded: () => {
             dispatch(actions.loaded());
+        },
+        search: (val) => {
+            dispatch(actions.search(val))
         }
     };
 };

@@ -133,7 +133,6 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
                 if (err) {
                     console.log('update err', err);
                 } else if (book) {
-                    // console.log('update success', book.chapters)
                     book.chapters[req.body.ch] = [...book.chapters[req.body.ch], data.Location];
                     book.markModified('chapters');
                     book.save((err, updatedBook) => {

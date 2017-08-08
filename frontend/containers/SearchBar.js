@@ -36,7 +36,6 @@ class SearchBar extends React.Component {
       })
       .then((res) => {
           if (res.data.success) {
-              console.log("componentDidMount", res.data.books);
               this.setState({
                   books: res.data.books
               });
@@ -67,27 +66,22 @@ class SearchBar extends React.Component {
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
   // input value for every given suggestion.
   getSuggestionValue (suggestion) {
-      console.log("SUGGESTION", suggestion);
       this.setState({
           key: suggestion.key
       });
-      console.log("GET SUGGESTION VALUE", this.state)
       return suggestion.title;
   }
 
   onChange (event, { newValue }) {
       event.preventDefault();
-      console.log("newVal:", newValue)
       this.setState({
           value: newValue
       });
-      console.log("val:", this.state.value);
   };
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
   onSuggestionsFetchRequested({ value }) {
-     console.log("fetched req:", value)
     this.setState({
       suggestions: this.getSuggestions(value)
     });
@@ -100,7 +94,6 @@ class SearchBar extends React.Component {
     });
   };
   onSearch (e) {
-      console.log("SEARCH BUTTON CLICKED")
       e.preventDefault();
       this.props.search(this.state.key)
     //   console.log(this.state)
