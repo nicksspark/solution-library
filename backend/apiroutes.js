@@ -111,7 +111,6 @@ router.get('/book/:bookId', (req, res) => {
 router.post('/upload', upload.single('myFile'), (req, res) => {
     // Create S3 service object
     const s3 = new AWS.S3();
-    console.log('req', req.file)
     // call S3 to retrieve upload file to specified bucket
     var params = {
         Bucket: 'cramberry',
@@ -124,14 +123,26 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
     s3.upload(params, function (err, data) {
         if (err) {
             console.log("ERROR", err);
-        } if (data) {
+        } else if (data) {
             console.log("upload success");
+            // let push = {};
+            // const ch = req.body.ch;
+            // push[ch] = data.Location;
+
             Book.findById(req.body.searchId, (err, book) => {
                 if (err) {
                     console.log('update err', err);
                 } else if (book) {
+                    // console.log('update success', book.chapters)
                     book.chapters[req.body.ch] = [...book.chapters[req.body.ch], data.Location];
-                    console.log('update success', book);
+                    book.markModified('chapters');
+                    book.save((err, updatedBook) => {
+                        if (err) {
+                            console.log('save err', err);
+                        } else {
+                            console.log('update success', updatedBook.chapters);
+                        }
+                    })
                 } else { console.log('no book'); //no err and no book
                 //     new Book({
                 //         title: req.body.title, //going to have to get info from form or something
