@@ -80,6 +80,7 @@ class Writers extends Component {
             .field('searchId', this.props.searchId)
             .field('chapter', this.state.chap)
             .field('user', this.props.user.id)
+            .field('keyWords', this.state.keyWords)
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);
@@ -191,7 +192,7 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
-        isLoaded: state.loader.bookLoaded
+        isLoaded: state.loader.bookLoaded,
         user: state.reducer.user,
     };
 }
