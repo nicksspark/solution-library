@@ -102,15 +102,15 @@ router.get('/book/:bookId', (req, res) => {
             res.json({ failure: 'no book'});
         } else {
             const bookArr = [];
-            book.uploads.forEach((upload) => {
+            for (let i = 0; i < book.chapters.length; i++) {
                 const chapArr = [];
-                for (let i = 0; i < book.chapters.length; i++) {
+                book.uploads.forEach((upload) => {
                     if (book.chapters[i] === upload.chapter){
                         chapArr.push(upload);
                     }
-                }
+                });
                 bookArr.push(chapArr);
-            });
+            }
             console.log(bookArr);
             res.json({
                 success: true,
