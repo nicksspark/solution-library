@@ -25,7 +25,7 @@ class Book extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const id = this.props.path.split('/')[2];
         axios.get('/api/book/' + id, {
             headers: {
@@ -34,7 +34,6 @@ class Book extends Component {
         })
         .then((res) => {
             if (res.data.success) {
-                console.log('uploads', res.data.uploads)
                 this.setState({
                     uploads: res.data.uploads,
                     title: res.data.title,
@@ -52,6 +51,8 @@ class Book extends Component {
     printChap() {
         const uploads = this.state.uploads;
         const ch = this.state.chapter;
+        console.log('uploads', uploads)
+        console.log('links', uploads[ch - 1])
             if (uploads && ch) {
                 const links = uploads[ch - 1];
                 return links.map((link) => (
@@ -81,7 +82,7 @@ class Book extends Component {
                 <div>
                     {chapters.map(ch => (
                         <MenuItem
-                            primaryText={(chapters.indexOf(ch) + 1).toString() + ". " + ch}
+                            primaryText={ch}
                             onClick={() => {this.setState({chapter: chapters.indexOf(ch) + 1})}}
                         />
                     ))}
