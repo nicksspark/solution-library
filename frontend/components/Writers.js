@@ -80,6 +80,7 @@ class Writers extends Component {
             .field('searchId', this.props.searchId)
             .field('chapter', this.state.chap)
             .field('user', this.props.user.id)
+            .field('keyWords', this.state.keyWords)
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);

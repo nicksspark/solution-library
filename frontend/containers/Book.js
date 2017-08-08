@@ -17,7 +17,10 @@ class Book extends Component {
         this.state = {
             open: false,
             chapter: 1,
-            book: null,
+            uploads: [],
+            title: '',
+            author: '',
+            chapters: [],
             home: false
         };
     }
@@ -31,8 +34,12 @@ class Book extends Component {
         })
         .then((res) => {
             if (res.data.success) {
+                console.log('uploads', res.data.uploads)
                 this.setState({
-                    book: res.data.uploads
+                    uploads: res.data.uploads,
+                    title: res.data.title,
+                    author: res.data.author,
+                    chapters: res.data.chapters,
                 });
             }
             this.props.loaded();
@@ -43,14 +50,13 @@ class Book extends Component {
     }
 
     printChap() {
-        const book = this.state.book;
+        const uploads = this.state.uploads;
         const ch = this.state.chapter;
-            if (book && ch) {
-                const chapterArr =  book.chapters[ch];
-                const links = chapterArr.map((link) => (
-                    <a href={link} target='_blank' style={styles.block}>Link to Chapter 1</a>
+            if (uploads && ch) {
+                const links = uploads[ch - 1];
+                return links.map((link) => (
+                    <a href={link} target='_blank' style={styles.block}>link: {link}</a>
                 ))
-                return links;
             }
     }
 
@@ -68,6 +74,21 @@ class Book extends Component {
             home: true
         });
     }
+    contents() {
+        const chapters = this.state.chapters;
+        return (
+            <Drawer open={this.state.open}>
+                <div>
+                    {chapters.map(ch => (
+                        <MenuItem
+                            primaryText={(chapters.indexOf(ch) + 1).toString() + ". " + ch}
+                            onClick={() => {this.setState({chapter: chapters.indexOf(ch) + 1})}}
+                        />
+                    ))}
+                </div>
+            </Drawer>
+        )
+    }
 
     render() {
         if (!this.props.token) {
@@ -84,72 +105,21 @@ class Book extends Component {
                         onClick={() => {this.handleToggle()}}
                     />
                 </div>
+                <h1 styles={styles.center}>
+                    {this.state.title}
+                </h1>
                 <div style={styles.links}>
                     <div>
                         <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">Top-voted notes</a>
-                    </div>
-                    <div>
-                        <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
-                    </div>
-                    <div>
-                        <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
-                    </div>
-                    <div>
-                        <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
-                    </div>
-                    <div>
-                        <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">More notes</a>
                     </div>
                     {this.printChap()}
                 </div>
                 <div style={styles.links}>
                     <a href='#' onClick={(e) => {this.onHome(e)}}>Home</a>
                 </div>
-                <Drawer open={this.state.open}>
-                    <div>
-                        <MenuItem
-                            primaryText="1. Introduction"
-                            menuItems={[
-                                <div>
-                                    <MenuItem primaryText="1.1 Equally Likely Outcomes"/>
-                                    <MenuItem primaryText="1.2 Interpretations"/>
-                                    <MenuItem primaryText="1.3 Distributions"/>
-                                    <MenuItem primaryText="1.4 Conditional Probability and Independence"/>
-                                    <MenuItem primaryText="1.5 Bayes' Rule"/>
-                                    <MenuItem primaryText="1.6 Sequences of Events"/>
-                                </div>
-                            ]}
-                            onClick={() => {this.setState({chapter: 1})}}
-                        />
-                        <MenuItem
-                            primaryText="2. Repeated Trials and Sampling"
-                            menuItems={[
-                                <div>
-                                    <MenuItem primaryText="2.1 Binomial Distribution"/>
-                                    <MenuItem primaryText="2.2 Normal Approximation: Method"/>
-                                    <MenuItem primaryText="2.3 Normal Approximation: Derivation"/>
-                                    <MenuItem primaryText="2.4 Poisson Approximation"/>
-                                    <MenuItem primaryText="2.5 Random Sampling"/>
-                                </div>
-                            ]}
-                            onClick={() => {this.setState({chapter: 2})}}
-                        />
-                        <MenuItem
-                            primaryText="3. Random Variables"
-                            menuItems={[
-                                <div>
-                                    <MenuItem primaryText="3.1 Introduction"/>
-                                    <MenuItem primaryText="3.2 Expectation"/>
-                                    <MenuItem primaryText="3.3 SD and Normal Approximation"/>
-                                    <MenuItem primaryText="3.4 Discrete Distributions"/>
-                                    <MenuItem primaryText="3.5 The Poisson Distribution"/>
-                                    <MenuItem primaryText="3.6 Symmetry"/>
-                                </div>
-                            ]}
-                            onClick={() => {this.setState({chapter: 3})}}
-                        />
-                    </div>
-                </Drawer>
+                <div>
+                    {this.contents()}
+                </div>
             </div>
         )
     }
