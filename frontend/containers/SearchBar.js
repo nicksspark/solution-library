@@ -3,17 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { search } from '../actions/index';
 import actions from '../actions/index';
-// Imagine you have a list of languages that you'd like to autosuggest.
-// const languages = [
-//   {
-//     name: 'C',
-//     year: 1972
-//   },
-//   {
-//     name: 'Elm',
-//     year: 2012
-//   }
-// ];
+import axios from 'axios';
 
 class SearchBar extends React.Component {
   constructor() {
@@ -28,28 +18,7 @@ class SearchBar extends React.Component {
       value: '',
       suggestions: [],
       key: '',
-      books: [
-          {
-              title: 'Early Transcendentals',
-              author: 'Stewart',
-              key: '596fea7c734d1d6202a70d1f',
-          },
-          {
-              title: 'Early Transcendentals',
-              author: 'Anton',
-              key: 2,
-          },
-          {
-              title: 'Principles of Economics',
-              author: 'Frank',
-              key: 3,
-          },
-          {
-              title: 'Probability',
-              author: 'Pitman',
-              key: 4,
-          }
-      ]
+      books: []
   };
     this.onChange = this.onChange.bind(this);
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
@@ -59,23 +28,24 @@ class SearchBar extends React.Component {
     this.getSuggestions = this.getSuggestions.bind(this);
   }
 
-  // componentDidMount() {
-  //     axios.get('/api/searchbar/', {
-  //         headers: {
-  //             'Authorization': 'Bearer ' + this.props.token
-  //         }
-  //     })
-  //     .then((res) => {
-  //         if (res.data.success) {
-  //             this.setState({
-  //                 books: res.data.books
-  //             });
-  //         }
-  //     })
-  //     .catch((err) => {
-  //         console.log('ERR', err);
-  //     })
-  // }
+  componentDidMount() {
+      axios.get('/api/searchbar/', {
+          headers: {
+              'Authorization': 'Bearer ' + this.props.token
+          }
+      })
+      .then((res) => {
+          if (res.data.success) {
+              console.log("componentDidMount", res.data.books);
+              this.setState({
+                  books: res.data.books
+              });
+          }
+      })
+      .catch((err) => {
+          console.log('ERR', err);
+      })
+  }
 
   // Use your imagination to render suggestions.
   renderSuggestion(suggestion) {
@@ -133,9 +103,9 @@ class SearchBar extends React.Component {
       console.log("SEARCH BUTTON CLICKED")
       e.preventDefault();
       this.props.search(this.state.key)
-      console.log(this.state)
+    //   console.log(this.state)
     //   this.props.search(this.state.key)
-      console.log("VALUE", this.state.key);
+    //   console.log("VALUE", this.state.key);
   }
 
   render() {
