@@ -189,7 +189,7 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
-        isLoaded: state.loader.bookLoaded
+        isLoaded: state.loader.bookLoaded,
         user: state.reducer.user,
     };
 }

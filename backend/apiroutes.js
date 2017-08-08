@@ -95,19 +95,34 @@ router.post('/register', async (req, res) => {
 
 router.get('/book/:bookId', (req, res) => {
     console.log('here')
-    Book.findById(req.params.bookId, (err, book) => {
+    Book.findById(req.params.bookId).populate('uploads').exec((err, book) => {
         if (err) {
             res.json({ failure: 'error' });
         } else if (!book) {
             res.json({ failure: 'no book'});
         } else {
+            const bookArr = [];
+            book.uploads.forEach((upload) => {
+                const chapArr = [];
+                for (let i = 0; i < book.chapters.length; i++) {
+                    if (book.chapters[i] === upload.chapter){
+                        chapArr.push(upload);
+                    }
+                }
+                bookArr.push(chapArr);
+            });
+            console.log(bookArr);
             res.json({
                 success: true,
-                book: book
-            })
+                uploads: bookArr,
+                title: book.title,
+                author: book.author,
+                chapters: book.chapters
+            });
         }
-    })
-})
+    });
+});
+
 
 router.post('/upload', upload.single('myFile'), (req, res) => {
     // Create S3 service object

@@ -32,7 +32,7 @@ class Book extends Component {
         .then((res) => {
             if (res.data.success) {
                 this.setState({
-                    book: res.data.book
+                    book: res.data.uploads
                 });
             }
             this.props.loaded();
