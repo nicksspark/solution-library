@@ -5,6 +5,11 @@ import Dropzone from 'react-dropzone';
 import axios from 'axios';
 import superagent from 'superagent';
 import SearchBar from '../containers/SearchBar';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import Divider from 'material-ui/Divider';
+
+import actions from '../actions/index';
 
 class Writers extends Component {
     constructor() {
@@ -12,6 +17,8 @@ class Writers extends Component {
         this.state = {
             home: false,
             files: [],
+            chapters: [],
+            chap: "",
         }
     }
     onDrop(files) {
@@ -41,6 +48,58 @@ class Writers extends Component {
                 console.log('sent to S3');
             })
     }
+
+    handleChange (event, index, value) {
+        this.setState({chap: value});
+    }
+
+    componentWillReceiveProps (nextProps) {
+        console.log('nextprops', nextProps)
+        if (!nextProps.isLoaded) {
+            axios.post('/api/loadchapters', {
+                bookId: nextProps.searchId
+            }, {
+                headers: {
+                    'Authorization': 'Bearer ' + nextProps.token
+                }
+            })
+            .then((res) => {
+                if (res.data.success) {
+                    this.setState({
+                        chapters: res.data.chapters,
+                        chap: res.data.chapters[0]
+                    });
+                    console.log('updated', res.data)
+                    nextProps.loaded();
+                }
+            })
+            .catch((err) => {
+                console.log('ERR', err);
+            })
+        }
+    }
+
+    chapter () {
+        if (this.state.chapters && this.props.isLoaded) {
+            console.log('rendering', this.state)
+            return (
+                <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
+                    {this.state.chapters.map(chapter =>
+                    <MenuItem value={chapter} primaryText={chapter}/>)}
+                </DropDownMenu>
+            )
+        }
+    }
+        // if (this.state.chapters && this.props.isLoaded) {
+        //     console.log('chapter', this.state.chapters)
+        //     return (
+        //         <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
+        //             {this.state.chapters.map(chapter => {
+        //                 <MenuItem value={chapter} primaryText={chapter}/>
+        //             })}
+        //         </DropDownMenu>
+        //     )
+        // }
     render() {
         if (!this.props.token) {
             return <Redirect to='/login'/>
@@ -78,6 +137,9 @@ class Writers extends Component {
                     {this.showFiles()}
                     <h2>Search for a book:</h2>
                     <SearchBar/>
+                    <h3>Select a chapter: </h3>
+                    {this.chapter()}
+                    <Divider />
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
@@ -92,11 +154,16 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
+        isLoaded: state.loader.loaded
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {};
+    return {
+        loaded: () => {
+            dispatch(actions.loaded())
+        }
+    };
 }
 
 Writers = connect(mapStateToProps, mapDispatchToProps)(Writers);

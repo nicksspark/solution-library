@@ -103,9 +103,9 @@ class SearchBar extends React.Component {
       console.log("SEARCH BUTTON CLICKED")
       e.preventDefault();
       this.props.search(this.state.key)
-      console.log(this.state)
+    //   console.log(this.state)
     //   this.props.search(this.state.key)
-      console.log("VALUE", this.state.key);
+    //   console.log("VALUE", this.state.key);
   }
 
   render() {
