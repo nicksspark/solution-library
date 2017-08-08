@@ -9,6 +9,9 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
+import Tesseract from 'tesseract.js';
+import stopwords from 'stopwords';
+
 import actions from '../actions/index';
 
 class Writers extends Component {
@@ -22,10 +25,39 @@ class Writers extends Component {
         }
     }
     onDrop(files) {
-        console.log('files', [...this.state.files, ...files]);
-        this.setState({
-            files: [...this.state.files, ...files]
-        });
+        console.log('dropped', files[0]);
+        const sten = stopwords.english;
+        Tesseract.recognize(files[0])
+        .progress(message => console.log(message))
+        .catch(err => console.error(err))
+        .then(result => {
+            console.log(result);
+            let tessWords = {};
+            result.words.forEach(word => {
+                if (word.confidence > 50 &&
+                    isNaN(word.text) &&
+                    word.text.length > 2) {
+                    if (sten.indexOf(word.text) < 0) {
+                        if (!tessWords[word.text]) {
+                            tessWords[word.text] = 1;
+                        } else {
+                            tessWords[word.text]++;
+                        }
+                    }
+                }
+            })
+            const keyWords = [];
+            for (let key in tessWords) {
+                if (tessWords[key] > 3) {
+                    keyWords.push(key);
+                }
+            }
+            console.log('array of words', keyWords);
+            this.setState({
+                files: [...this.state.files, ...files]
+            });
+        })
+        .finally(resultOrError => console.log('done'))
     }
     showFiles() {
         return (this.state.files.map((f) => (<p>{f.name}</p>)))
@@ -82,7 +114,7 @@ class Writers extends Component {
 
     chapter () {
         if (this.state.chapters && this.props.isLoaded) {
-            // this.props.loaded();
+            // this.props.loaded(); //have to unload at some point before searching again
             return (
                 <div>
                     <h3>Select a chapter: </h3>
@@ -133,7 +165,9 @@ class Writers extends Component {
                     <h2>Search for a book:</h2>
                     <SearchBar/>
                     {this.chapter()}
+                    <br/>
                     <Divider />
+                    <br/>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
