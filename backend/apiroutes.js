@@ -5,6 +5,7 @@ const models = require('./models/models.js');
 // IMPORTING ALL MODELS
 const User = models.User;
 const Book = models.Book;
+const Upload = models.Upload;
 // const passport = require('passport');
 // hashing
 const crypto = require('crypto');
@@ -126,29 +127,39 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
             console.log("ERROR", err);
         } if (data) {
             console.log("upload success");
-            Book.findById(req.body.searchId, (err, book) => {
-                if (err) {
-                    console.log('update err', err);
-                } else if (book) {
-                    book.chapters[req.body.ch] = [...book.chapters[req.body.ch], data.Location];
-                    console.log('update success', book);
-                } else { console.log('no book'); //no err and no book
-                //     new Book({
-                //         title: req.body.title, //going to have to get info from form or something
-                //         chapters: [req.body.ch: data.Location] //again, get ch and filename
-                //     }).save((err, newBook) => {
-                //         if (err) {
-                //             res.json({ failure: 'failed to save new book' });
-                //         } else {
-                //             res.json({ success: 'saved new book' });
-                //             console.log('saved');
-                //         }
-                //     });
-                }
-            })
-        }
-    });
-})
+            console.log('user', req.body.user)
+            new Upload ({
+                user: req.body.user,
+                date: new Date(),
+                keywords: req.body.keywords,
+                upvotes: 0,
+                chapter: req.body.chapter,
+                link: data.Location
+            }).save((err, newUpload) => {
+              if (err) {
+                res.json({ failure: 'failed to save new upload' });
+              } else {
+                  Book.findById(req.body.searchId, (err, book) => {
+                      if (err) {
+                          console.log('update err', err);
+                      } else if (book) {
+                          book.uploads.push(newUpload._id);
+                          book.save((err, updatedBook) => {
+                              if (err) {
+                                  res.json({failure: 'failed to save the new upload'})
+                              }
+                          })
+                          console.log('saved the new upload!!');
+                          res.json({success: 'saved new upload'})
+                      } else {
+                          console.log('no book'); //no err and no book
+                      }
+                  });
+              }
+          });
+      }
+  });
+});
 router.get('/searchbar', (req,res) => {
     Book.find()
     .exec((err, books) => {
@@ -171,9 +182,8 @@ router.post('/loadchapters', (req,res) => {
     .exec((err, books) => {
         if (err) {
             res.json({ failure: "cannot find book"})
-        }
-        const chapters = Object.keys(books.chapters);
-        res.json({ success: true, chapters: chapters });
+        };
+        res.json({ success: true, chapters: books.chapters });
     });
 });
 

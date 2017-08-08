@@ -20,6 +20,7 @@ class Writers extends Component {
             chapters: [],
             chap: "",
         }
+        this.handleChange = this.handleChange.bind(this);
     }
     onDrop(files) {
         console.log('files', [...this.state.files, ...files]);
@@ -37,11 +38,13 @@ class Writers extends Component {
     }
     onUpload(e) {
         e.preventDefault();
+        console.log("USER", this.props.user);
         const self = this;
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
-            .field('ch', '1') //change this to input
+            .field('chapter', this.state.chap)
+            .field('user', this.props.user.id)
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);
@@ -50,7 +53,10 @@ class Writers extends Component {
     }
 
     handleChange (event, index, value) {
-        this.setState({chap: value});
+        event.preventDefault();
+        this.setState({
+            chap: value
+        });
     }
 
     componentWillReceiveProps (nextProps) {
@@ -65,6 +71,7 @@ class Writers extends Component {
             })
             .then((res) => {
                 if (res.data.success) {
+                    console.log("RES.DATA", res.data);
                     this.setState({
                         chapters: res.data.chapters,
                         chap: res.data.chapters[0]
@@ -154,7 +161,8 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
-        isLoaded: state.loader.loaded
+        isLoaded: state.loader.loaded,
+        user: state.reducer.user,
     };
 }
 
