@@ -20,13 +20,13 @@ class Writers extends Component {
         this.state = {
             home: false,
             files: [],
+            keyWords: [],
             chapters: [],
             chap: "",
         }
         this.handleChange = this.handleChange.bind(this);
     }
     onDrop(files) {
-        console.log('dropped', files[0]);
         const sten = stopwords.english;
         Tesseract.recognize(files[0])
         .progress(message => console.log(message))
@@ -37,8 +37,9 @@ class Writers extends Component {
             result.words.forEach(word => {
                 if (word.confidence > 50 &&
                     isNaN(word.text) &&
-                    word.text.length > 2) {
-                    if (sten.indexOf(word.text) < 0) {
+                    word.text.length > 2 &&
+                    /^[a-zA-Z]+$/.test(word.text)) {
+                    if (sten.indexOf(word.text.toLowerCase()) < 0) {
                         if (!tessWords[word.text]) {
                             tessWords[word.text] = 1;
                         } else {
@@ -49,13 +50,14 @@ class Writers extends Component {
             })
             const keyWords = [];
             for (let key in tessWords) {
-                if (tessWords[key] > 3) {
+                if (tessWords[key] > 4) {
                     keyWords.push(key);
                 }
             }
             console.log('array of words', keyWords);
             this.setState({
-                files: [...this.state.files, ...files]
+                files: [...this.state.files, ...files],
+                keyWords: keyWords
             });
         })
         .finally(resultOrError => console.log('done'))
