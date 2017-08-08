@@ -112,7 +112,6 @@ router.get('/book/:bookId', (req, res) => {
 router.post('/upload', upload.single('myFile'), (req, res) => {
     // Create S3 service object
     const s3 = new AWS.S3();
-    console.log('req', req.file)
     // call S3 to retrieve upload file to specified bucket
     var params = {
         Bucket: 'cramberry',
@@ -125,7 +124,7 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
     s3.upload(params, function (err, data) {
         if (err) {
             console.log("ERROR", err);
-        } if (data) {
+        } else if (data) {
             console.log("upload success");
             console.log('user', req.body.user)
             new Upload ({

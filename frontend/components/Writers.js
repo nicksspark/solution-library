@@ -9,6 +9,9 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
+import Tesseract from 'tesseract.js';
+import stopwords from 'stopwords';
+
 import actions from '../actions/index';
 
 class Writers extends Component {
@@ -23,10 +26,39 @@ class Writers extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
     onDrop(files) {
-        console.log('files', [...this.state.files, ...files]);
-        this.setState({
-            files: [...this.state.files, ...files]
-        });
+        console.log('dropped', files[0]);
+        const sten = stopwords.english;
+        Tesseract.recognize(files[0])
+        .progress(message => console.log(message))
+        .catch(err => console.error(err))
+        .then(result => {
+            console.log(result);
+            let tessWords = {};
+            result.words.forEach(word => {
+                if (word.confidence > 50 &&
+                    isNaN(word.text) &&
+                    word.text.length > 2) {
+                    if (sten.indexOf(word.text) < 0) {
+                        if (!tessWords[word.text]) {
+                            tessWords[word.text] = 1;
+                        } else {
+                            tessWords[word.text]++;
+                        }
+                    }
+                }
+            })
+            const keyWords = [];
+            for (let key in tessWords) {
+                if (tessWords[key] > 3) {
+                    keyWords.push(key);
+                }
+            }
+            console.log('array of words', keyWords);
+            this.setState({
+                files: [...this.state.files, ...files]
+            });
+        })
+        .finally(resultOrError => console.log('done'))
     }
     showFiles() {
         return (this.state.files.map((f) => (<p>{f.name}</p>)))
@@ -40,6 +72,7 @@ class Writers extends Component {
         e.preventDefault();
         console.log("USER", this.props.user);
         const self = this;
+        const ch = this.state.chap;
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
@@ -88,25 +121,19 @@ class Writers extends Component {
 
     chapter () {
         if (this.state.chapters && this.props.isLoaded) {
-            console.log('rendering', this.state)
+            // this.props.loaded(); //have to unload at some point before searching again
             return (
-                <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
-                    {this.state.chapters.map(chapter =>
-                    <MenuItem value={chapter} primaryText={chapter}/>)}
-                </DropDownMenu>
+                <div>
+                    <h3>Select a chapter: </h3>
+                    <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
+                        {this.state.chapters.map(chapter =>
+                        <MenuItem value={chapter} primaryText={chapter}/>)}
+                    </DropDownMenu>
+                </div>
             )
         }
     }
-        // if (this.state.chapters && this.props.isLoaded) {
-        //     console.log('chapter', this.state.chapters)
-        //     return (
-        //         <DropDownMenu value={this.state.chap} onChange={this.handleChange}>
-        //             {this.state.chapters.map(chapter => {
-        //                 <MenuItem value={chapter} primaryText={chapter}/>
-        //             })}
-        //         </DropDownMenu>
-        //     )
-        // }
+
     render() {
         if (!this.props.token) {
             return <Redirect to='/login'/>
@@ -144,9 +171,10 @@ class Writers extends Component {
                     {this.showFiles()}
                     <h2>Search for a book:</h2>
                     <SearchBar/>
-                    <h3>Select a chapter: </h3>
                     {this.chapter()}
+                    <br/>
                     <Divider />
+                    <br/>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
@@ -161,7 +189,7 @@ const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
         searchId: state.search.value,
-        isLoaded: state.loader.loaded,
+        isLoaded: state.loader.bookLoaded
         user: state.reducer.user,
     };
 }
@@ -169,7 +197,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         loaded: () => {
-            dispatch(actions.loaded())
+            dispatch(actions.bookLoaded())
         }
     };
 }
