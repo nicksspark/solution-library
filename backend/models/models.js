@@ -18,15 +18,37 @@ const bookSchema = new Schema({
   date: Date,
   keywords: Array,
   image: String,
-  chapters: Object, //each chapter key will have an array of links
+  chapters: Array,
+  uploads: [{ type: Schema.Types.ObjectId, ref: 'Upload' }], //each chapter key will have an array of links
   genre: String
 });
+
+const uploadSchema = new Schema({
+    user: {type: Schema.Types.ObjectId, ref: 'User'},
+    date: Date,
+    keywords: Array,
+    upvotes: Number,
+    chapter: String,
+    link: String,
+    // comments:[{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+});
+
+// const commentSchema = new Schema({
+//     author: String,
+//     date: Date,
+//     likes: Number
+// })
 
 //  Models: pass the schema as an argument after building schema
 
 const User = mongoose.model('User', userSchema);
 const Book = mongoose.model('Book', bookSchema);
+const Upload = mongoose.model('Upload', uploadSchema);
+// const Comment = mongoose.model('Comment', commentSchema);
+
 module.exports = {
   User,
   Book,
+  Upload,
+  // Comment
 };
