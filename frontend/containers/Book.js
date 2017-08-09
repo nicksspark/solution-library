@@ -51,12 +51,10 @@ class Book extends Component {
     printChap() {
         const uploads = this.state.uploads;
         const ch = this.state.chapter;
-        console.log('uploads', uploads)
-        console.log('links', uploads[ch - 1])
             if (uploads && ch) {
                 const links = uploads[ch - 1];
-                return links.map((link) => (
-                    <a href={link} target='_blank' style={styles.block}>link: {link}</a>
+                return links.map((linkObj) => (
+                    <a href={linkObj.link} target='_blank' style={styles.block}>link: {linkObj.link}</a>
                 ))
             }
     }
@@ -106,9 +104,11 @@ class Book extends Component {
                         onClick={() => {this.handleToggle()}}
                     />
                 </div>
-                <h1 styles={styles.center}>
-                    {this.state.title}
-                </h1>
+                <div style={styles.center}>
+                    <h1>
+                        {this.state.title}
+                    </h1>
+                </div>
                 <div style={styles.links}>
                     <div>
                         <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">Top-voted notes</a>

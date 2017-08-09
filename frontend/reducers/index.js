@@ -23,9 +23,10 @@ const loader = (state = { loaded: false, bookLoaded: false }, action) => {
   const newState = state;
   switch (action.type) {
     case 'LOADED':
+        console.log('loaded is now ' + !newState.loaded + ' (should be true on book page!)')
         return { loaded: !newState.loaded };
     case 'BOOKLOADED':
-        return { bookLoaded: !newState.bookLoaded};
+        return { bookLoaded: !newState.bookLoaded };
     default:
       return state;
   }
