@@ -30,6 +30,7 @@ const uploadSchema = new Schema({
     upvotes: Number,
     chapter: String,
     link: String,
+    title: String
     // comments:[{ type: Schema.Types.ObjectId, ref: 'Comment' }]
 });
 

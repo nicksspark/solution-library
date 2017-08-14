@@ -142,13 +142,15 @@ router.post('/upload', upload.single('myFile'), (req, res) => {
         } else if (data) {
             console.log("upload success");
             console.log('user', req.body.user)
+            const title = data.title ? data.title : 'Untitled';
             new Upload ({
                 user: req.body.user,
                 date: new Date(),
                 keywords: req.body.keywords,
                 upvotes: 0,
                 chapter: req.body.chapter,
-                link: data.Location
+                link: data.Location,
+                title: title
             }).save((err, newUpload) => {
               if (err) {
                 res.json({ failure: 'failed to save new upload' });
@@ -200,6 +202,22 @@ router.post('/loadchapters', (req,res) => {
         res.json({ success: true, chapters: books.chapters });
     });
 });
+
+router.post('/like', (req,res) => {
+    Upload.findById(req.body.uploadId)
+    .exec((err, upload) => {
+        if (err) {
+            res.json({failure: "cannot find upload"})
+        }
+        upload.upvotes = req.body.upvotes;
+        upload.save((err, updatedUpload) => {
+            if (err) {
+                res.json({ failure: 'failed to save the like'});
+            }
+            res.json({ success: true, updatedUpload: updatedUpload});
+        });
+    })
+})
 
 
 module.exports = router;

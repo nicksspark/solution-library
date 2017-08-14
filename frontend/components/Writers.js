@@ -8,6 +8,7 @@ import SearchBar from '../containers/SearchBar';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
+import TextField from 'material-ui/TextField';
 
 import Tesseract from 'tesseract.js';
 import stopwords from 'stopwords';
@@ -23,6 +24,7 @@ class Writers extends Component {
             keyWords: [],
             chapters: [],
             chap: "",
+            title: ''
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -81,6 +83,7 @@ class Writers extends Component {
             .field('chapter', this.state.chap)
             .field('user', this.props.user.id)
             .field('keyWords', this.state.keyWords)
+            .field('title', this.state.title)
             .attach('myFile', this.state.files[0])
             .end((err, res) => {
                 if (err) console.log(err);
@@ -136,6 +139,13 @@ class Writers extends Component {
             )
         }
     }
+    title (e) {
+        e.preventDefault;
+        this.setState({
+            title: e.target.value
+        });
+        console.log(this.state.title);
+    }
 
     render() {
         if (!this.props.token) {
@@ -148,12 +158,12 @@ class Writers extends Component {
             <div>
                 <div>
                     <h1>
-                        Become a CramBerry contributor.
+                        Post your notes.
                     </h1>
                 </div>
                 <div>
                     <h2>
-                        Post notes. Earn cash. Contact us at <a
+                        Contact us at <a
                             href="mailto:cramberry@gmail.com"
                             target="_top">
                             CramBerry@gmail.com
@@ -172,18 +182,24 @@ class Writers extends Component {
                     </div>
                     <h2>To be uploaded:</h2>
                     {this.showFiles()}
+                    <TextField onChange={(e) => {this.title(e)}}
+                        hintText="Enter a title for your notes.."
+                        value={this.state.title}
+                    /><br />
                     <h2>Search for a book:</h2>
                     <SearchBar/>
                     {this.chapter()}
                     <br/>
                     <Divider />
                     <br/>
+                    <div>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
                 </div>
                 <div>
                     <a href='#' onClick={(e) => this.onHome(e)}>Home</a>
                 </div>
             </div>
+            <div>
         );
     }
 };

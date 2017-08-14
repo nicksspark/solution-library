@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { search } from '../actions/index';
 import actions from '../actions/index';
 import axios from 'axios';
-
+import styles from '../../public/searchbar.css';
+import RaisedButton from 'material-ui/RaisedButton';
 class SearchBar extends React.Component {
   constructor() {
     super();
@@ -113,7 +114,7 @@ class SearchBar extends React.Component {
 
     // Finally, render it!
     return (
-        <div>
+        <div style={styles2.searchbar}>
             <Autosuggest
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
@@ -122,7 +123,7 @@ class SearchBar extends React.Component {
                 renderSuggestion={this.renderSuggestion}
                 inputProps={inputProps}
             />
-            <button onClick={(e)=>{this.onSearch(e)}}>Search!</button>
+            <RaisedButton label="Search!" secondary={true} style={styles2.button} onClick={(e)=>{this.onSearch(e)}}></RaisedButton>
         </div>
     );
   }
@@ -139,6 +140,22 @@ const mapDispatchToProps = (dispatch) => {
         }
     };
 };
+
+const styles2 = {
+    searchbar: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    button: {
+        marginLeft: '20px',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // textAlign: 'center',
+        // height: '36px'
+    }
+
+}
 
 SearchBar = connect(mapStateToProps, mapDispatchToProps)(SearchBar);
 

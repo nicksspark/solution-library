@@ -122,7 +122,9 @@ class Students extends Component {
                         <a style={styles.link} href='#' onClick={(e) => {this.onLogout(e)}}>Logout</a>
                     </div>
                 </span>
+                <div style={styles.searchbar}>
                 <SearchBar/>
+            </div>
                 {this.math()}
                 {this.econ()}
             </div>
@@ -190,6 +192,9 @@ const styles = {
     left: {
         paddingTop: '20px',
         paddingLeft: '36px'
+    },
+    searchbar: {
+        padding: '20px'
     }
 };
 
