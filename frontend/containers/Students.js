@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import SearchBar from '../containers/SearchBar';
 import { logout } from '../actions/index';
+import axios from 'axios';
 
 class Students extends Component {
     constructor() {
@@ -17,29 +18,59 @@ class Students extends Component {
             bookId: "",
             register: false,
             writer: false,
+            books: []
         };
     }
-
-    // componentDidUpdate() {
-    //     if (this.props.value){
-    //         this.setState({
-    //             bookId: this.props.value.id
-    //         });
-    //     }
-    // }
-
+    componentDidMount() {
+        axios.get('/api/searchbar', {
+            headers: {
+                'Authorization': 'Bearer ' + this.props.token
+            }
+        })
+        .then((res) => {
+            if (res.data.success) {
+                const mathData = [];
+                const econData = [];
+                const poliData = [];
+                res.data.books.forEach(book => {
+                    if (book.genre === 'Mathematics') {
+                        mathData.push(book);
+                    }
+                    if (book.genre === 'Economics') {
+                        econData.push(book);
+                    }
+                    if (book.genre === 'Political Science') {
+                        poliData.push(book);
+                    }
+                })
+                this.setState({
+                    mathData: mathData,
+                    econData: econData,
+                    poliData: poliData,
+                });
+                this.props.streamLoaded();
+                console.log('loaded');
+            }
+        })
+        .catch((err) => {
+            console.log('err', err);
+        })
+    }
     onLogout(e) {
         e.preventDefault();
+        this.props.streamLoaded();
         this.props.logout();
     }
     textbook(e, key) {
         e.preventDefault();
+        this.props.streamLoaded();
         this.setState({
             bookId: key
       });
     }
     onWriter(e) {
         e.preventDefault();
+        this.props.streamLoaded();
         this.setState({
             writer: true
         });
@@ -55,15 +86,14 @@ class Students extends Component {
                     cols={4}
                     style={styles.gridList}
                 >
-                    {mathData.map((tile) => (
+                    {this.state.mathData.map((book) => (
                     <GridTile
-                        // key={tile.img}
-                        key={tile.key}
-                        title={tile.title}
-                        subtitle={tile.author}
-                        onClick={(e) => {this.textbook(e, tile.key)}}
+                        key={book.key}
+                        title={book.title}
+                        subtitle={book.author}
+                        onClick={(e) => {this.textbook(e, book.key)}}
                     >
-                        <img src={tile.img}/>
+                        <img src={book.image}/>
                     </GridTile>
                   ))}
                 </GridList>
@@ -81,7 +111,7 @@ class Students extends Component {
                     cols={4}
                     style={styles.gridList}
                 >
-                    {econData.map((tile) => (
+                    {this.state.econData.map((tile) => (
                     <GridTile
                         // key={tile.img}
                         key={tile.key}
@@ -89,7 +119,32 @@ class Students extends Component {
                         subtitle={tile.author}
                         onClick={(e) => {this.textbook(e, tile.key)}}
                     >
-                        <img src={tile.img} />
+                        <img src={tile.image} />
+                    </GridTile>
+                  ))}
+                </GridList>
+            </div>
+        );
+    }
+    poli() {
+        return (
+            <div style={styles.root}>
+                <h2 style={styles.subHeader}>
+                    Political Science
+                </h2>
+                <GridList
+                    cellHeight={240}
+                    cols={4}
+                    style={styles.gridList}
+                >
+                    {this.state.poliData.map((book) => (
+                    <GridTile
+                        key={book.key}
+                        title={book.title}
+                        subtitle={book.author}
+                        onClick={(e) => {this.textbook(e, book.key)}}
+                    >
+                        <img src={book.image}/>
                     </GridTile>
                   ))}
                 </GridList>
@@ -101,7 +156,7 @@ class Students extends Component {
             return <Redirect to='/' />
         }
         if (this.state.bookId) {
-          return <Redirect to={"/textbook/" + this.state.bookId}/>
+            return <Redirect to={"/textbook/" + this.state.bookId}/>
         }
         if (this.props.value) {
           return <Redirect to={"/textbook/" + this.props.value}/>
@@ -109,7 +164,7 @@ class Students extends Component {
         if (this.state.writer) {
             return <Redirect to="/writers"/>
         }
-        return (
+        return this.props.isLoaded && (
             <div>
                 <span style={styles.title}>
                     <div style={styles.left}>
@@ -127,6 +182,7 @@ class Students extends Component {
             </div>
                 {this.math()}
                 {this.econ()}
+                {this.poli()}
             </div>
         )
     }
@@ -135,7 +191,8 @@ class Students extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.reducer.token,
-        value: state.search.value
+        value: state.search.value,
+        isLoaded: state.loader.streamLoaded,
     };
 }
 
@@ -143,6 +200,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => {
             dispatch(actions.logout());
+        },
+        streamLoaded: () => {
+            dispatch(actions.streamLoaded());
         }
     }
 }

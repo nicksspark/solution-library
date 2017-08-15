@@ -19,14 +19,19 @@ const reducer = (state = {}, action) => {
     }
 }
 
-const loader = (state = { loaded: false, bookLoaded: false }, action) => {
-  const newState = state;
+const loader = (state = { loaded: false, bookLoaded: false, streamLoaded: false }, action) => {
+  const newState = Object.assign({}, state);
   switch (action.type) {
     case 'LOADED':
-        console.log('loaded is now ' + !newState.loaded + ' (should be true on book page!)')
-        return { loaded: !newState.loaded };
+        console.log('loaded is now ' + !newState.loaded + ' (should only be true on book page!)')
+        newState.loaded = !newState.loaded;
+        return newState;
     case 'BOOKLOADED':
-        return { bookLoaded: !newState.bookLoaded };
+        newState.bookLoaded = !newState.bookLoaded;
+        return newState;
+    case 'STREAMLOADED':
+        newState.streamLoaded = !newState.streamLoaded;
+        return newState;
     default:
       return state;
   }

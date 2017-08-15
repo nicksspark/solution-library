@@ -28,6 +28,7 @@ class Book extends Component {
     }
 
     componentDidMount() {
+        console.log('mounting')
         const id = this.props.path.split('/')[2];
         axios.get('/api/book/' + id, {
             headers: {
@@ -42,7 +43,6 @@ class Book extends Component {
                     title: res.data.title,
                     author: res.data.author,
                     chapters: res.data.chapters,
-                    upvotes: res.data.upvotes,
                 });
                 console.log('state set', this.state.uploads)
             }
@@ -52,27 +52,11 @@ class Book extends Component {
             console.log('ERR', err);
         })
     }
-
-    // printChap() {
-    //     const uploads = this.state.uploads;
-    //     const ch = this.state.chapter;
-    //     console.log('uploads', uploads);
-    //         if (uploads && ch) {
-    //             const links = uploads[ch - 1];
-    //             return links.map((linkObj) => (
-    //                 <a href={linkObj.link} target='_blank' style={styles.block}>link: {linkObj.link}</a>
-    //             ))
-    //         }
-    // }
-
     like(e, index) {
         e.preventDefault();
         const uploadArray = this.state.uploads[this.state.chapter-1];
         const uploadObj = uploadArray[index]
-        console.log(uploadObj);
-        console.log(index);
         const upvotes = uploadObj.upvotes + 1;
-        console.log('like');
         axios.post('/api/like', {
             upvotes: upvotes,
             uploadId: uploadObj._id
@@ -95,8 +79,6 @@ class Book extends Component {
                     }
                     return uploadArray;
                 })
-                console.log("UPDATEDUPLOADsArray", updatedUploadArray);
-                console.log("UPDATEDUPLOADs", updatedUploads);
                 this.setState({
                     uploads: updatedUploads
                 });
@@ -110,14 +92,11 @@ class Book extends Component {
     printChap() {
         const uploads = this.state.uploads;
         const ch = this.state.chapter;
-        console.log('uploads', uploads);
-        console.log('props', this.props)
             if (uploads && ch) {
                 const links = uploads[ch - 1];
                 links.sort(function(a, b){
                     return parseFloat(b.upvotes) - parseFloat(a.upvotes);
                 });
-                console.log(links);
                 return (
                     <div style={styles.root}>
                         <GridList
@@ -130,10 +109,12 @@ class Book extends Component {
                                         key={linkObj._id}
                                         title="TITLE"
                                         subtitle={<span><b>{linkObj.upvotes}</b></span>}
-                                        actionIcon={<div onClick={(e) => {this.like(e, index)}}> <IconButton>
-                                            <StarBorder color="white" />
-                                        </IconButton>
-                                    </div>}>
+                                        actionIcon={
+                                            <div onClick={(e) => {this.like(e, index)}}>
+                                                <IconButton>
+                                                    <StarBorder color="white" />
+                                                </IconButton>
+                                            </div>}>
                                         <a href={linkObj.link} target='_blank' style={styles.block}>Download</a>
                                         <img src= "./visuals/note-2.png"/>
 
@@ -163,17 +144,19 @@ class Book extends Component {
         if (this.state.home) {
             return <Redirect to='/students'/>
         }
-        return this.props.isLoaded && (
+        var t = this.props.isLoaded && (
             <div>
                 <div style={styles.links}>
                     <Drawer width="30%" open={true}>
                         <div>
-                            {this.state.chapters.map(ch => (
-                                <MenuItem
-                                    primaryText={ch}
-                                    onClick={() => {this.setState({chapter: this.state.chapters.indexOf(ch) + 1})}}
-                                />
-                            ))}
+                            {this.state.chapters.map(ch => {
+                                return (
+                                    <MenuItem
+                                        primaryText={ch}
+                                        onClick={() => {this.setState({chapter: this.state.chapters.indexOf(ch) + 1})}}
+                                    />
+                                )}
+                            )}
                         </div>
                     </Drawer>
                 </div>
@@ -186,13 +169,12 @@ class Book extends Component {
                     <a href='#' onClick={(e) => {this.onHome(e)}}>Home</a>
                 </div>
                 <div style={styles.links}>
-                    <div>
-                        <a href='https://en.wikipedia.org/wiki/Probability' target="_blank">Top-voted notes</a>
-                    </div>
                     {this.printChap()}
                 </div>
             </div>
         )
+        console.log(t)
+        return t;
     }
 }
 

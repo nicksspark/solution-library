@@ -11,6 +11,9 @@ const Upload = models.Upload;
 const crypto = require('crypto');
 const isEmail = require('is-email');
 
+//pdfstuff
+const PdfPrinter = require('pdfmake')
+
 //S3 STUFF:
 // Load the SDK for JavaScript
 var AWS = require('aws-sdk');
@@ -24,7 +27,7 @@ const multer = require('multer');
 const upload = multer({
     storage: multer.memoryStorage(),
     // file size limitation in bytes
-    limits: { fileSize: 52428800 },
+    limits: { fileSize: 52428800 * 2 },
 });
 
 function hashPassword(password) {
@@ -111,7 +114,6 @@ router.get('/book/:bookId', (req, res) => {
                 });
                 bookArr.push(chapArr);
             }
-            console.log(bookArr);
             res.json({
                 success: true,
                 uploads: bookArr,
@@ -124,57 +126,141 @@ router.get('/book/:bookId', (req, res) => {
 });
 
 
-router.post('/upload', upload.single('myFile'), (req, res) => {
-    // Create S3 service object
-    const s3 = new AWS.S3();
-    // call S3 to retrieve upload file to specified bucket
-    var params = {
-        Bucket: 'cramberry',
-        Key: Math.floor(Math.random() * 1000000000).toString(),
-        Body: req.file.buffer,
-        ACL: 'public-read', // your permisions
-    };
+router.post('/upload', upload.array('myFiles'), (req, res) => {
+    console.log('server file type', req.body.fileType);
+    if (req.body.fileType === 'application/pdf') {
+        const s3 = new AWS.S3();
+        // call S3 to retrieve upload file to specified bucket
+        var params = {
+            Bucket: 'cramberry',
+            Key: Math.floor(Math.random() * 10000000000).toString() + '.pdf',
+            Body: req.files[0].buffer,
+            ContentType: 'application/pdf',
+            ACL: 'public-read', // your permissions
+        };
 
-    // call S3 to retrieve upload file to specified bucket
-    s3.upload(params, function (err, data) {
-        if (err) {
-            console.log("ERROR", err);
-        } else if (data) {
-            console.log("upload success");
-            console.log('user', req.body.user)
-            const title = data.title ? data.title : 'Untitled';
-            new Upload ({
-                user: req.body.user,
-                date: new Date(),
-                keywords: req.body.keywords,
-                upvotes: 0,
-                chapter: req.body.chapter,
-                link: data.Location,
-                title: title
-            }).save((err, newUpload) => {
-              if (err) {
-                res.json({ failure: 'failed to save new upload' });
-              } else {
-                  Book.findById(req.body.searchId, (err, book) => {
-                      if (err) {
-                          console.log('update err', err);
-                      } else if (book) {
-                          book.uploads.push(newUpload._id);
-                          book.save((err, updatedBook) => {
-                              if (err) {
-                                  res.json({failure: 'failed to save the new upload'})
-                              }
-                          })
-                          console.log('saved the new upload!!');
-                          res.json({success: 'saved new upload'})
-                      } else {
-                          console.log('no book'); //no err and no book
-                      }
-                  });
-              }
-          });
-      }
-  });
+        // call S3 to retrieve upload file to specified bucket
+        s3.upload(params, function (err, data) {
+            if (err) {
+                console.log("ERROR", err);
+            } else if (data) {
+                const title = req.body.title ? req.body.title : 'Untitled';
+                new Upload ({
+                    user: req.body.user,
+                    date: new Date(),
+                    keywords: req.body.keyWords,
+                    upvotes: 0,
+                    chapter: req.body.chapter,
+                    link: data.Location,
+                    title: title
+                }).save((err, newUpload) => {
+                    if (err) {
+                        res.json({ failure: 'failed to save new upload' });
+                    } else {
+                        Book.findById(req.body.searchId, (err, book) => {
+                            if (err) {
+                                console.log('update err', err);
+                            } else if (book) {
+                                book.uploads.push(newUpload._id);
+                                book.save((err, updatedBook) => {
+                                    if (err) {
+                                        res.json({failure: 'failed to save the new upload'})
+                                    }
+                                })
+                                console.log('upload success');
+                                res.json({success: 'saved new upload'})
+                            } else {
+                                console.log('no book'); //no err and no book
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    } else if (req.body.fileType === 'image/png' || req.body.fileType === 'image/jpg' ||req.body.fileType === 'image/jpeg') {
+        let docDefinition = {
+            content: []
+        };
+        req.files.forEach(file => {
+            docDefinition.content.push({
+                // if you specify width, image will scale proportionally
+                image: 'data:' + req.body.fileType + ';base64,' +  file.buffer.toString('base64'),
+                width: 520
+            });
+        });
+
+        const path = require('path');
+        const fonts = {
+            Roboto: {
+                normal: path.join(__dirname, '../public/fonts/Roboto-Regular.ttf'),
+                bold: path.join(__dirname, '../public/fonts/Roboto-Medium.ttf'),
+                italics: path.join(__dirname, '../public/fonts/Roboto-Italic.ttf'),
+                bolditalics: path.join(__dirname, '../public/fonts/Roboto-MediumItalic.ttf')
+            }
+        };
+
+        const printer = new PdfPrinter(fonts);
+        var pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+        var chunks = [];
+        var result;
+
+        pdfDoc.on('data', function (chunk) {
+            chunks.push(chunk);
+        });
+        pdfDoc.on('end', function () {
+            result = Buffer.concat(chunks);
+
+            // Create S3 service object
+            const s3 = new AWS.S3();
+            // call S3 to retrieve upload file to specified bucket
+            var params = {
+                Bucket: 'cramberry',
+                Key: Math.floor(Math.random() * 10000000000).toString() + '.pdf',
+                Body: result,
+                ContentType: 'application/pdf',
+                ACL: 'public-read', // your permissions
+            };
+
+            // call S3 to retrieve upload file to specified bucket
+            s3.upload(params, function (err, data) {
+                if (err) {
+                    console.log("ERROR", err);
+                } else if (data) {
+                    new Upload ({
+                        user: req.body.user,
+                        date: new Date(),
+                        keywords: req.body.keyWords,
+                        upvotes: 0,
+                        chapter: req.body.chapter,
+                        link: data.Location
+                    }).save((err, newUpload) => {
+                        if (err) {
+                            res.json({ failure: 'failed to save new upload' });
+                        } else {
+                            Book.findById(req.body.searchId, (err, book) => {
+                                if (err) {
+                                    console.log('update err', err);
+                                } else if (book) {
+                                    book.uploads.push(newUpload._id);
+                                    book.save((err, updatedBook) => {
+                                        if (err) {
+                                            res.json({failure: 'failed to save the new upload'})
+                                        }
+                                    })
+                                    console.log('upload success');
+                                    res.json({success: 'saved new upload'})
+                                } else {
+                                    console.log('no book'); //no err and no book
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        pdfDoc.end();
+    }
 });
 router.get('/searchbar', (req,res) => {
     Book.find()
@@ -182,14 +268,16 @@ router.get('/searchbar', (req,res) => {
         if (err) {
             res.json({ failure: "cannot find books"})
         }
-        const newBook = books.map((book) => {
+        const newBooks = books.map((book) => {
             return {
                 title: book.title,
                 author: book.author,
-                key: book.id
+                key: book.id,
+                image: book.image,
+                genre: book.genre,
             }
         });
-        res.json({ success: true, books: newBook });
+        res.json({ success: true, books: newBooks });
     });
 });
 

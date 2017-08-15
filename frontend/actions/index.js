@@ -34,12 +34,19 @@ const bookLoaded = () => {
     }
 }
 
+const streamLoaded = () => {
+    return {
+        type: 'STREAMLOADED'
+    }
+}
+
 const actions = {
     login,
     logout,
     loaded,
     search,
-    bookLoaded
+    bookLoaded,
+    streamLoaded
 }
 
 export default actions;

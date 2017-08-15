@@ -29,40 +29,45 @@ class Writers extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
     onDrop(files) {
-        const sten = stopwords.english;
-        Tesseract.recognize(files[0])
-        .progress(message => console.log(message))
-        .catch(err => console.error(err))
-        .then(result => {
-            console.log(result);
-            let tessWords = {};
-            result.words.forEach(word => {
-                if (word.confidence > 50 &&
-                    isNaN(word.text) &&
-                    word.text.length > 2 &&
-                    /^[a-zA-Z]+$/.test(word.text)) {
-                    if (sten.indexOf(word.text.toLowerCase()) < 0) {
-                        if (!tessWords[word.text]) {
-                            tessWords[word.text] = 1;
-                        } else {
-                            tessWords[word.text]++;
-                        }
-                    }
-                }
-            })
-            const keyWords = [];
-            for (let key in tessWords) {
-                if (tessWords[key] > 4) {
-                    keyWords.push(key);
-                }
-            }
-            console.log('array of words', keyWords);
-            this.setState({
-                files: [...this.state.files, ...files],
-                keyWords: keyWords
-            });
-        })
-        .finally(resultOrError => console.log('done'))
+        const fileType = files[0].type;
+        this.setState({
+            files: [...this.state.files, ...files],
+            fileType: fileType,
+        });
+        // const sten = stopwords.english;
+        // Tesseract.recognize(files[0])
+        // .progress(message => console.log(message))
+        // .catch(err => console.error(err))
+        // .then(result => {
+        //     console.log(result);
+        //     let tessWords = {};
+        //     result.words.forEach(word => {
+        //         if (word.confidence > 50 &&
+        //             isNaN(word.text) &&
+        //             word.text.length > 2 &&
+        //             /^[a-zA-Z]+$/.test(word.text)) {
+        //             if (sten.indexOf(word.text.toLowerCase()) < 0) {
+        //                 if (!tessWords[word.text]) {
+        //                     tessWords[word.text] = 1;
+        //                 } else {
+        //                     tessWords[word.text]++;
+        //                 }
+        //             }
+        //         }
+        //     })
+        //     const keyWords = [];
+        //     for (let key in tessWords) {
+        //         if (tessWords[key] > 4) {
+        //             keyWords.push(key);
+        //         }
+        //     }
+        //     console.log('array of words', keyWords);
+            // this.setState({
+            //     files: [...this.state.files, ...files],
+            //     keyWords: keyWords
+            // });
+        // })
+        // .finally(resultOrError => console.log('done'))
     }
     showFiles() {
         return (this.state.files.map((f) => (<p>{f.name}</p>)))
@@ -74,20 +79,23 @@ class Writers extends Component {
     }
     onUpload(e) {
         e.preventDefault();
-        console.log("USER", this.props.user);
+        // console.log("USER", this.props.user);
         const self = this;
         const ch = this.state.chap;
         superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
-            .field('chapter', this.state.chap)
+            .field('chapter', ch)
             .field('user', this.props.user.id)
             .field('keyWords', this.state.keyWords)
             .field('title', this.state.title)
-            .attach('myFile', this.state.files[0])
+            .field('fileType', this.state.fileType)
+            .attach('myFiles', this.state.files[0])
+            .attach('myFiles', this.state.files[1])
+            .attach('myFiles', this.state.files[2])
             .end((err, res) => {
                 if (err) console.log(err);
-                console.log('sent to S3');
+                console.log('sent to backend');
             })
     }
 
@@ -99,7 +107,7 @@ class Writers extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        console.log('nextprops', nextProps)
+        // console.log('nextprops', nextProps)
         if (!nextProps.isLoaded) {
             axios.post('/api/loadchapters', {
                 bookId: nextProps.searchId
@@ -110,12 +118,11 @@ class Writers extends Component {
             })
             .then((res) => {
                 if (res.data.success) {
-                    console.log("RES.DATA", res.data);
                     this.setState({
                         chapters: res.data.chapters,
                         chap: res.data.chapters[0]
                     });
-                    console.log('updated', res.data)
+                    // console.log('updated', res.data)
                     nextProps.loaded();
                 }
             })
@@ -144,7 +151,7 @@ class Writers extends Component {
         this.setState({
             title: e.target.value
         });
-        console.log(this.state.title);
+        // console.log(this.state.title);
     }
 
     render() {
@@ -156,12 +163,12 @@ class Writers extends Component {
         }
         return (
             <div>
-                <div>
+                <div style={styles.center}>
                     <h1>
                         Post your notes.
                     </h1>
                 </div>
-                <div>
+                <div style={styles.column}>
                     <h2>
                         Contact us at <a
                             href="mailto:cramberry@gmail.com"
@@ -170,20 +177,20 @@ class Writers extends Component {
                         </a>.
                     </h2>
                 </div>
-                <div>
+                <div style={styles.column}>
                     <h2>
                         Drag-and-drop or click below to upload.
                     </h2>
                     <div style={styles.drop}>
                         <Dropzone
                             onDrop={this.onDrop.bind(this)}
-                            accept=".pdf, .docx, .jpg, .png"
+                            accept=".pdf, .png, .jpeg, .jpg"
                         />
                     </div>
                     <h2>To be uploaded:</h2>
                     {this.showFiles()}
                     <TextField onChange={(e) => {this.title(e)}}
-                        hintText="Enter a title for your notes.."
+                        hintText="Enter a title for your notes..."
                         value={this.state.title}
                     /><br />
                     <h2>Search for a book:</h2>
@@ -194,12 +201,11 @@ class Writers extends Component {
                     <br/>
                     <div>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
-                </div>
-                <div>
                     <a href='#' onClick={(e) => this.onHome(e)}>Home</a>
                 </div>
+
             </div>
-            <div>
+        </div>
         );
     }
 };
@@ -233,4 +239,14 @@ const styles = {
     block: {
         display: 'block',
     },
-}
+    center: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    column: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center'
+    }
+};
