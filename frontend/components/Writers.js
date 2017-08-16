@@ -82,21 +82,25 @@ class Writers extends Component {
         // console.log("USER", this.props.user);
         const self = this;
         const ch = this.state.chap;
-        superagent.post('/api/upload')
+        const kw = this.state.keyWords;
+        const tit = this.state.title;
+        const ft = this.state.fileType;
+        const files = this.state.files;
+        let req = superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
             .field('chapter', ch)
             .field('user', this.props.user.id)
-            .field('keyWords', this.state.keyWords)
-            .field('title', this.state.title)
-            .field('fileType', this.state.fileType)
-            .attach('myFiles', this.state.files[0])
-            .attach('myFiles', this.state.files[1])
-            .attach('myFiles', this.state.files[2])
-            .end((err, res) => {
-                if (err) console.log(err);
-                console.log('sent to backend');
-            })
+            .field('keyWords', kw)
+            .field('title', tit)
+            .field('fileType', ft);
+        files.forEach(file => {
+            req = req.attach('myFiles', file)
+        })
+        req.end((err, res) => {
+            if (err) console.log(err);
+            console.log('sent to backend');
+        })
     }
 
     handleChange (event, index, value) {
