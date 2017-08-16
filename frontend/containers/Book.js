@@ -107,7 +107,7 @@ class Book extends Component {
                                 return (
                                     <GridTile
                                         key={linkObj._id}
-                                        title="TITLE"
+                                        title={linkObj.title}
                                         subtitle={<span><b>{linkObj.upvotes}</b></span>}
                                         actionIcon={
                                             <div onClick={(e) => {this.like(e, index)}}>

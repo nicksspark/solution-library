@@ -24,7 +24,8 @@ class Writers extends Component {
             keyWords: [],
             chapters: [],
             chap: "",
-            title: ''
+            title: '',
+            uploaded: false
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -101,6 +102,7 @@ class Writers extends Component {
             if (err) console.log(err);
             console.log('sent to backend');
         })
+>>>>>>> 0ada0e413fbbb28e3a3c0e5deae3db9b4eb22a9d
     }
 
     handleChange (event, index, value) {
@@ -165,6 +167,9 @@ class Writers extends Component {
         if (this.state.home) {
             return <Redirect to='/students'/>
         }
+        if (this.state.uploaded) {
+            return <Redirect to='/home'/>
+        }
         return (
             <div>
                 <div style={styles.center}>
@@ -205,7 +210,7 @@ class Writers extends Component {
                     <br/>
                     <div>
                     <a href='#' onClick={(e) => this.onUpload(e)}>Upload</a>
-                    <a href='#' onClick={(e) => this.onHome(e)}>Home</a>
+                    <a href="#/students" onClick={(e) => this.onHome(e)}>Home</a>
                 </div>
 
             </div>
