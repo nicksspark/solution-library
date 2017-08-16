@@ -17,11 +17,12 @@ const path = require('path');
 const app = express();
 app.use(bodyParser.json());
 
+
 //copied from boilerplate
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.urlencoded());
-// app.use(expressJWT({ secret: 'secret' }).unless({ path: ['/login', '/#', '/', '/api/register'] }));
+app.use(expressJWT({ secret: 'secret' }).unless({ path: ['/login', '/#', '/', '/api/register'] }));
 app.use(passport.initialize());
 // Mongoose configuration
 // When there is an error, run this function:
@@ -47,19 +48,27 @@ app.get('/', (req, res) => {
 app.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-  const token = jwt.sign({ id: req.body.id }, 'secret');
-  res.json({
-    success: true,
-    user: {
-      id: req.user.id,
-      fname: req.user.fname,
-      lname: req.user.lname,
-      username: req.user.username,
-      email: req.user.email,
-      library: req.user.library,
-    },
-    token,
-  });
+    const token = jwt.sign({ id: req.body.id }, 'secret');
+    // const cookie = req.cookies;
+    // if (cookie === undefined) {
+    //     res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+    //     console.log('cookie created successfully');
+    // }
+    // else {
+    //     console.log('cookie exists', token);
+    // }
+    res.json({
+        success: true,
+        user: {
+            id: req.user.id,
+            fname: req.user.fname,
+            lname: req.user.lname,
+            username: req.user.username,
+            email: req.user.email,
+            library: req.user.library,
+        },
+        token,
+    });
 });
 
 // session setup
