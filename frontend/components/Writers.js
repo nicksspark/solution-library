@@ -88,9 +88,9 @@ class Writers extends Component {
         const files = this.state.files;
         let req = superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
-            .field('searchId', this.props.searchId)
+            .field('searchId', self.props.searchId)
             .field('chapter', ch)
-            .field('user', this.props.user.id)
+            .field('user', self.props.user.id)
             .field('keyWords', kw)
             .field('title', tit)
             .field('fileType', ft);

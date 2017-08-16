@@ -17,6 +17,11 @@ class Students extends Component {
         login: false
       }
     }
+    // componentDidMount() {
+    //     if (this.props.isStreamLoaded) {
+    //         this.props.streamLoaded();
+    //     }
+    // }
     onRegister(e) {
         e.preventDefault();
         this.setState({
@@ -109,7 +114,8 @@ class Students extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.reducer.token
+        token: state.reducer.token,
+        // isStreamLoaded: state.loader.streamLoaded,
     };
 }
 
@@ -117,7 +123,10 @@ const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => {
             dispatch(actions.logout());
-        }
+        },
+        // streamLoaded: () => {
+        //     dispatch(actions.streamLoaded());
+        // }
     }
 }
 

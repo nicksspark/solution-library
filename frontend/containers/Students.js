@@ -153,6 +153,7 @@ class Students extends Component {
     }
     render() {
         if (!this.props.token) {
+            this.props.streamLoaded();
             return <Redirect to='/' />
         }
         if (this.state.bookId) {

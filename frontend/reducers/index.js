@@ -30,6 +30,7 @@ const loader = (state = { loaded: false, bookLoaded: false, streamLoaded: false 
         newState.bookLoaded = !newState.bookLoaded;
         return newState;
     case 'STREAMLOADED':
+        console.log('streamLoaded is now ' + !newState.streamLoaded + ' (should only be true on students page!)')
         newState.streamLoaded = !newState.streamLoaded;
         return newState;
     default:

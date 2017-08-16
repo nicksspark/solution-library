@@ -9,8 +9,8 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
 class Login extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       username: '',
       password: '',
@@ -20,6 +20,11 @@ class Login extends Component {
     this.passwordChange = this.passwordChange.bind(this);
     this.onLogin = this.onLogin.bind(this);
   }
+  // componentDidMount() {
+  //     if (this.props.isStreamLoaded) {
+  //         this.props.streamLoaded();
+  //     }
+  // }
   usernameChange(e) {
     e.preventDefault();
     this.setState({
@@ -40,7 +45,10 @@ class Login extends Component {
     })
     .then((res) => {
       if (res.data.success) {
-        this.props.login(res.data.user, res.data.token);
+    //   if (this.props.isStreamLoaded) {
+    //       this.props.streamLoaded();
+    //   }
+      this.props.login(res.data.user, res.data.token);
       }
     })
     .catch((err) => {
@@ -55,9 +63,6 @@ class Login extends Component {
   }
 
   render() {
-    // console.log('im in login');
-    // console.log('token', this.props.token);
-    //
     if (this.props.token) {
       return <Redirect to='/students' />;
     }
@@ -93,16 +98,20 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    token: state.reducer.token
+    token: state.reducer.token,
+    // isStreamLoaded: state.loader.streamLoaded,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    login: (user, token) => {
-      dispatch(actions.login(user, token))
-    }
-  };
+    return {
+        login: (user, token) => {
+            dispatch(actions.login(user, token))
+        },
+        // streamLoaded: () => {
+        //     dispatch(actions.steamLoaded())
+        // }
+    };
 };
 
 Login = connect(mapStateToProps, mapDispatchToProps)(Login);
