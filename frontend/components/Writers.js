@@ -83,11 +83,16 @@ class Writers extends Component {
         // console.log("USER", this.props.user);
         const self = this;
         const ch = this.state.chap;
-        superagent.post('/api/upload')
+        const kw = this.state.keyWords;
+        const tit = this.state.title;
+        const ft = this.state.fileType;
+        const files = this.state.files;
+        let req = superagent.post('/api/upload')
             .set('Authorization', 'Bearer ' + self.props.token)
             .field('searchId', this.props.searchId)
             .field('chapter', ch)
             .field('user', this.props.user.id)
+<<<<<<< HEAD
             .field('keyWords', this.state.keyWords)
             .field('title', this.state.title)
             .field('fileType', this.state.fileType)
@@ -100,6 +105,18 @@ class Writers extends Component {
                 alert("Upload successful!")
                 this.setState({uploaded: true});
             })
+=======
+            .field('keyWords', kw)
+            .field('title', tit)
+            .field('fileType', ft);
+        files.forEach(file => {
+            req = req.attach('myFiles', file)
+        })
+        req.end((err, res) => {
+            if (err) console.log(err);
+            console.log('sent to backend');
+        })
+>>>>>>> 0ada0e413fbbb28e3a3c0e5deae3db9b4eb22a9d
     }
 
     handleChange (event, index, value) {
