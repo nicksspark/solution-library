@@ -37,7 +37,7 @@ class Book extends Component {
         })
         .then((res) => {
             if (res.data.success) {
-                console.log('got response')
+                console.log('got response', res.data.uploads)
                 this.setState({
                     uploads: res.data.uploads,
                     title: res.data.title,
@@ -101,6 +101,7 @@ class Book extends Component {
                     <div style={styles.root}>
                         <GridList
                             cellHeight={180}
+                            cols={4}
                             style={styles.gridList}
                         >
                             {links.map((linkObj, index) => {
@@ -115,7 +116,7 @@ class Book extends Component {
                                                     <StarBorder color="white" />
                                                 </IconButton>
                                             </div>}>
-                                        <a href={linkObj.link} target='_blank' style={styles.block}>Download</a>
+                                        <a href={linkObj.link} target='_blank' style={styles.block}>View</a>
                                         <img src= "./visuals/note-2.png"/>
 
                                     </GridTile>
@@ -147,7 +148,7 @@ class Book extends Component {
         var t = this.props.isLoaded && (
             <div>
                 <div style={styles.links}>
-                    <Drawer width="30%" open={true}>
+                    <Drawer width="20%" open={true}>
                         <div>
                             {this.state.chapters.map(ch => {
                                 return (
@@ -160,13 +161,15 @@ class Book extends Component {
                         </div>
                     </Drawer>
                 </div>
-                <div style={styles.center}>
-                    <h1>
-                        {this.state.title}
-                    </h1>
-                </div>
-                <div style={styles.home}>
-                    <a href='#' onClick={(e) => {this.onHome(e)}}>Home</a>
+                <div style={styles.title}>
+                    <span>
+                        <h1>
+                            {this.state.title}
+                        </h1>
+                        <span style={styles.home}>
+                            <a href='#' onClick={(e) => {this.onHome(e)}}>Home</a>
+                        </span>
+                    </span>
                 </div>
                 <div style={styles.links}>
                     {this.printChap()}
@@ -209,12 +212,13 @@ const styles = {
         display: 'flex',
         alignItems: 'stretch',
     },
-    center: {
-        display: 'flex',
-        justifyContent: 'center',
+    title: {
+        // display: 'flex',
+        // justifyContent: 'center',
+        marginLeft: '322px'
     },
     links: {
-        paddingLeft: '400px',
+        marginLeft: '300px',
         paddingBottom: '10px',
         paddingTop: '10px',
     },
@@ -230,11 +234,12 @@ const styles = {
         justifyContent: 'space-around',
     },
     gridList: {
-        width: 500,
+        width: 650,
         height: 450,
         overflowY: 'auto',
     },
     home: {
-        float: 'right'
+        float: 'right',
+        paddingRight: '30px',
     }
 };

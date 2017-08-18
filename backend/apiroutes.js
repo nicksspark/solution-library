@@ -97,7 +97,6 @@ router.post('/register', async (req, res) => {
 
 
 router.get('/book/:bookId', (req, res) => {
-    console.log('here')
     Book.findById(req.params.bookId).populate('uploads').exec((err, book) => {
         if (err) {
             res.json({ failure: 'error' });
@@ -127,7 +126,6 @@ router.get('/book/:bookId', (req, res) => {
 
 
 router.post('/upload', upload.array('myFiles'), (req, res) => {
-    console.log('server file type', req.body.fileType);
     if (req.body.fileType === 'application/pdf') {
         const s3 = new AWS.S3();
         // call S3 to retrieve upload file to specified bucket
@@ -152,7 +150,7 @@ router.post('/upload', upload.array('myFiles'), (req, res) => {
                     upvotes: 0,
                     chapter: req.body.chapter,
                     link: data.Location,
-                    title: title
+                    title
                 }).save((err, newUpload) => {
                     if (err) {
                         res.json({ failure: 'failed to save new upload' });
@@ -227,13 +225,15 @@ router.post('/upload', upload.array('myFiles'), (req, res) => {
                 if (err) {
                     console.log("ERROR", err);
                 } else if (data) {
+                    const title = req.body.title ? req.body.title : 'Untitled';
                     new Upload ({
                         user: req.body.user,
                         date: new Date(),
                         keywords: req.body.keyWords,
                         upvotes: 0,
                         chapter: req.body.chapter,
-                        link: data.Location
+                        link: data.Location,
+                        title,
                     }).save((err, newUpload) => {
                         if (err) {
                             res.json({ failure: 'failed to save new upload' });

@@ -76,6 +76,7 @@ class Students extends Component {
         });
     }
     math() {
+        const height = (this.state.mathData.length > 4) ? styles.gridList : styles.gridListShort;
         return (
             <div style={styles.root}>
                 <h2 style={styles.subHeader}>
@@ -84,7 +85,7 @@ class Students extends Component {
                 <GridList
                     cellHeight={240}
                     cols={4}
-                    style={styles.gridList}
+                    style={height}
                 >
                     {this.state.mathData.map((book) => (
                     <GridTile
@@ -101,6 +102,7 @@ class Students extends Component {
         );
     }
     econ() {
+        const height = (this.state.econData.length > 4) ? styles.gridList : styles.gridListShort;
         return (
             <div style={styles.root}>
                 <h2 style={styles.subHeader}>
@@ -109,7 +111,7 @@ class Students extends Component {
                 <GridList
                     cellHeight={240}
                     cols={4}
-                    style={styles.gridList}
+                    style={height}
                 >
                     {this.state.econData.map((tile) => (
                     <GridTile
@@ -127,6 +129,7 @@ class Students extends Component {
         );
     }
     poli() {
+        const height = (this.state.poliData.length > 4) ? styles.gridList : styles.gridListShort;
         return (
             <div style={styles.root}>
                 <h2 style={styles.subHeader}>
@@ -135,7 +138,7 @@ class Students extends Component {
                 <GridList
                     cellHeight={240}
                     cols={4}
-                    style={styles.gridList}
+                    style={height}
                 >
                     {this.state.poliData.map((book) => (
                     <GridTile
@@ -169,7 +172,7 @@ class Students extends Component {
             <div>
                 <span style={styles.title}>
                     <div style={styles.left}>
-                        <a style={styles.link} href='#' onClick={(e) => {this.onWriter(e)}}>Become a contributor</a>
+                        <a style={styles.link} href='#' onClick={(e) => {this.onWriter(e)}}>Post your notes</a>
                     </div>
                     <div style={styles.logo}>
                         <img src="./visuals/Cramberry.png"></img>
@@ -222,6 +225,13 @@ const styles = {
     gridList: {
         width: 900,
         height: 500,
+        overflowY: 'auto',
+        fontFamily: 'helvetica',
+        borderWidth: '1px solid grey',
+    },
+    gridListShort: {
+        width: 900,
+        height: 250,
         overflowY: 'auto',
         fontFamily: 'helvetica',
         borderWidth: '1px solid grey',

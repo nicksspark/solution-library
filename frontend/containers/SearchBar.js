@@ -123,7 +123,7 @@ class SearchBar extends React.Component {
                 renderSuggestion={this.renderSuggestion}
                 inputProps={inputProps}
             />
-            <RaisedButton label="Search!" secondary={true} style={styles2.button} onClick={(e)=>{this.onSearch(e)}}></RaisedButton>
+            <RaisedButton label="Select!" secondary={true} style={styles2.button} onClick={(e)=>{this.onSearch(e)}}></RaisedButton>
         </div>
     );
   }
